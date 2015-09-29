@@ -8,8 +8,8 @@ rWall automatically detects the current user's environment then selects a random
 
 ### Features ###
 
-* Auto-detects most environments, such as Windows and all common Linux Desktop Environments
-* Randomly selects an images from one of five user-preset directories, in addition to the default directory.
+* Auto-detects most environments, such as Windows and all common Linux desktop environments
+* Randomly selects images from one of five user-preset directories, in addition to the default directory.
 * Specify an image directory on the commandline.
 * In addition to random selection, the user can apply a manually selected image.
 * Walks through the list of images in the last used directory, turning your background into a flipbook/photo album.  This feature works with all the above features.
@@ -20,7 +20,7 @@ rWall automatically detects the current user's environment then selects a random
 
 ### How do I get set up? ###
 
-rWall only actually requires setup in KDE and Openbox. KDE support requires some trivial setup via "Default Desktop Settings". Using the slideshow option, set "Change images every" to lowest, and select [home]/.config/rwall/kde/mon1, then apply settings.  Openbox requires the installation of feh and the application of feh's background settings in autostart.sh.
+rWall only actually requires setup in KDE and Openbox. KDE support requires some trivial setup via "Default Desktop Settings". Using the slideshow option, set "Change images every" to lowest, and select ~/.config/rwall/kde/mon1, then apply settings.  Openbox requires the installation of feh and the application of feh's background settings in autostart.sh.
 
 * Configuration:
 rWall autoconfigures itself for the supported environments, for the most part.  A settings folder is created as [home]/.config/rwall.  Rwall.conf, background.conf, and images.txt files are created there.
