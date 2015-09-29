@@ -31,7 +31,7 @@ TODO: explore OSX functionality, persist image list between dif DEs
 OPTIONS: type rwall.py -h in a terminal
 REQUIREMENTS: Python3.2+, feh, python3-pil, xclip, and a supported desktop 
 environment.
-BUGS: ---
+BUGS: rwall.py --syncall breaks --next. Workaround: "rwall.py -r ; rwall.py -s"
 NOTES: Users should run the script once without options, then modify 
 ~/.config/rwall/rwall.conf as desired; KDE requires setting desktop slideshow to 
 "~/.config/rwall/kde/mon1". Openbox require feh to be installed and setup. 
