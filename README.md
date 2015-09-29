@@ -1,10 +1,10 @@
 # README #
 
-rWall
+rWall Stable
 
 ### What is this repository for? ###
 
-rWall automatically detects the current user's environment then selects a random image from a directory.  The script applies that image as a background. It supports GNOME3 (Gnome Shell, Unity, Cinnamon, Mate), KDE4 & 5, XFCE 4.10, LXDE, Openbox, and Windows 7.
+rWall automatically detects the current user's environment then selects a random image from a directory.  The script applies that image as a background. It supports GNOME3 (Gnome Shell, Unity, Cinnamon, Mate), KDE4 & 5, XFCE 4.10, LXDE, Openbox, and Windows 7, 8, and 10.
 
 ### Features ###
 
