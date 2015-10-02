@@ -32,7 +32,7 @@ rWall requires Python 3.2+, feh, and one of the supported desktop environments (
 Windows users should install Python 3.4 (not 3.5) and get the Pillow wheel from:
 http://www.lfd.uci.edu/~gohlke/pythonlibs/
 got to the cmd and run `pip install [name of Pillow file]` from the file's
-direcotry
+directory
 
 * Deployment instructions:
 Just download and run the script.  Setup shortcuts for rwall.py, rwall.py -n, and rwall.py -p to turn your background into a rapid photo album experience.
