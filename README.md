@@ -26,7 +26,12 @@ rWall only actually requires setup in KDE and Openbox. KDE support requires some
 rWall autoconfigures itself for the supported environments, for the most part.  A settings folder is created as [home]/.config/rwall.  Rwall.conf, background.conf, and images.txt files are created there.
 
 * Dependencies:
-rWall requires Python 3.2+, feh, and one of the supported desktop environments (GNOME3, Cinnamon2, KDE 4.x, Xfce 4.10, or Openbox).  Image filtering requires Python Pillow libraries be installed, but this will not break the script.  rWall's only hard dependency is feh, if you are in Openbox or an undetected Linux environment.
+rWall requires Python 3.2+, feh, and one of the supported desktop environments (GNOME3, Cinnamon2, KDE 4.x, Xfce 4.10, or Openbox).  Image filtering requires Python Pillow libraries be installed, but not doing so won't break the script.  rWall's only hard dependency is feh, if you are in Openbox or an undetected Linux environment.
+
+APT users can do: sudo apt-get install python3-pil xclip feh
+Windows users should install Python 3.4 (not 3.5) and get the Pillow wheel from:
+http://www.lfd.uci.edu/~gohlke/pythonlibs/
+got to the cmd and run "pip install [name of Pillow file]"
 
 * Deployment instructions:
 Just download and run the script.  Setup shortcuts for rwall.py, rwall.py -n, and rwall.py -p to turn your background into a rapid photo album experience.
