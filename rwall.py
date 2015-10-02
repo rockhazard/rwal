@@ -6,11 +6,10 @@ FILE: rwall.py
 
 DISCLAIMER: Distributed under GPL3.0. There is NO warranty expressed or implied.
 
-USAGE: rwall.py [-h] [-v] [-c] [-i] [-d DIRECTORY] [-1] [-2] [-3] [-4] [-5] [-n] 
-                [-p] [-l DIRECTORY DELAY COUNT next|random] [-b] [-e]
+USAGE: rwall.py -h
 
 DESCRIPTION: rWall randomizes backgrounds in GNOME 3, Cinnamon 2, KDE 4-5, Mate,
-Xfce 4.10, LXDE, Openbox (using feh), and Windows 7 - 10. rWall was developed 
+Xfce 4.10, LXDE, Openbox (using feh), and Windows 7-10. rWall was developed 
 primarily in Linux Mint, but has been shown to work in many distributions. 
 This program was originally ported from a bash script with the same name and 
 author.
@@ -31,7 +30,7 @@ TODO: explore OSX functionality, persist image list between dif DEs
 OPTIONS: type rwall.py -h in a terminal
 REQUIREMENTS: Python3.2+, feh, python3-pil, xclip, and a supported desktop 
 environment.
-BUGS: rwall.py --syncall breaks --next. Workaround: "rwall.py -r ; rwall.py -s"
+BUGS: ---
 NOTES: Users should run the script once without options, then modify 
 ~/.config/rwall/rwall.conf as desired; KDE requires setting desktop slideshow to 
 "~/.config/rwall/kde/mon1". Openbox require feh to be installed and setup. 
@@ -40,7 +39,7 @@ AUTHOR: rockhazard, rockhazardz@gmail.com
 ACKNOLEDGMENTS: xfconf shell string: Peter Levi (please go check out Variety!
 http://peterlevi.com/variety/)
 COMPANY: ---
-VERSION: rWall 3.5m "Akira", by rockhazard (c)2015
+VERSION: rWall 3.5n "Akira", by rockhazard (c)2015
 CREATED: 09/13/2015
 REVISION: 15
 LICENSE: GPL 3.0, no warranty expressed or implied
@@ -56,7 +55,7 @@ from subprocess import call
 
 # doing in-script dependency checks, because absence of packages will reduce 
 # functionality but not break the script, therefore warn user, but proceed
-depends = dict( xclip=( '/usr/bin/xclip', True ), feh=( '/usr/bin/feh', True ) )
+depends = dict( xclip=[ '/usr/bin/xclip', True ], feh=[ '/usr/bin/feh', True ] )
 modules = dict( Pillow=None )
 
 try: # check for 3rd party modules
@@ -70,13 +69,13 @@ if 'APPDATA' not in os.environ:
     for package, path in depends.items():
         if not Path(path[0]).is_file():
             path[1] = False
-            print('Please install:', package)
+            print('Please install:', Path(package).name)
 
 # import search path appended for configuration and module files
-# sys.path.append('{}/.config/rwall/'.format(os.expanduser('~')))
+# sys.path.append('{}/.config/rwall/'.format(os.environ['HOME']))
 
 class Rwall:
-    def __init__(self, switch='random'):  # classwide perams
+    def __init__(self, switch='random', **kwargs):  # classwide perams
         # User's home directory
         self.home = os.path.expanduser('~')
 
@@ -106,10 +105,18 @@ class Rwall:
         # configuration files
         self.configFile = Path(self.home, '.config/rwall/rwall.conf')
         self.bgFile = Path(self.home, '.config/rwall/background.conf')
+        # class-wide dictionary and its defaults
+        self._state = kwargs
+
+        # image filter default
+        self._state['filter'] = False
+
+        # make parser option lists available class-wide
+        self._state['directory'] = None
 
         # image acquisition switch determines method of image selection: 
         # 'random', 'next', 'previous', 'commandline', 'first'
-        self._state = switch
+        self._state['image'] = switch
 
         # list of images to be randomized and/or sorted
         self.sourceImages = []
@@ -117,6 +124,14 @@ class Rwall:
     """
     CONFIGURATION FUNCTIONS
     """
+
+    def set_state(self, key, value):
+        # accessor method
+        self._state[key] = value
+
+    def get_state(self, key):
+        # accessor method
+        return self._state.get(key, None)
 
     def set_config(self):
         """
@@ -149,7 +164,7 @@ class Rwall:
             # default settings
             self.config.add_section('Defaults')
             # announce wallpaper application and image/environment stats
-            self.config.set('Defaults','Announce', 'no')
+            # self.config.set('Defaults','Announce', 'no')
             # use $EDITOR variable to execute user's default text editor
             self.config.set('Defaults','Default Config Editor', 'editor')
             self.config.set('Defaults','Default Background Editor', 'gimp')
@@ -204,8 +219,6 @@ class Rwall:
             # open config file for reading if it already exists
             self.config.read(str(self.configFile))
             # config getter vars assigned here when used more than once
-            self.announceBool = self.config.getboolean('Defaults','Announce')
-
 
     def set_bgconfig(self):
         # file used by get_background and next/previous functions
@@ -257,7 +270,7 @@ class Rwall:
             self.imageDirectory = \
                 self.config.get('Preset Image Directories','Directory5')
         elif directory == 'directory': # commandline-supplied directory
-            self.imageDirectory = str(sys.argv[2])
+            self.imageDirectory = self._state['directory']
         elif directory == 'default':
             self.imageDirectory = \
                 self.config.get('Defaults','Default Directory')
@@ -337,11 +350,15 @@ class Rwall:
             # valid aspect ratios
             ratios = dict( sd480 = 4/3, hd1050 = 8/5, hd1080 = 16/9, 
                 hd1050x2 = 16/5, hd1080x2 = 32/9 )
-            # get config file setting
-            aspectRatio = self.config.get(
-            'Wallpaper Modes', 'Aspect Ratio Filter', fallback='none')
+            if self._state['filter']:
+                # get aspect ratio filter setting from commandline
+                aspectRatio = self._state['filter']
+            else:
+                # get config file setting
+                aspectRatio = self.config.get(
+                'Wallpaper Modes', 'Aspect Ratio Filter', fallback='none')
             if aspectRatio in ratios:
-                if self.announceBool:
+                if '--verbose' in sys.argv:
                     print(
                         'Selecting images with a', 
                         aspectRatio, 'aspect ratio.')
@@ -365,7 +382,7 @@ class Rwall:
                     return self.sourceImages
             elif aspectRatio not in ['None', 'NONE', 'no', 'none','']:
                 print(
-                'Invalid value. Check Aspect Ratio Filter in rwall.conf')
+                'Invalid value. Check the image filter setting.')
         else:
             print(
             'NOTICE: Image filtering disabled pending installation of Pillow.')
@@ -408,15 +425,13 @@ class Rwall:
         self.firstImage = self.sourceImages[0]
         return self.firstImage
 
-    def select_cli_image(self, image=False):
+    def select_cli_image(self):
         # target of self._state variable when assigned 'commandline'
-        if image == False:
-            image = str(sys.argv[2])
-        try: # validate image, build list based on it, then return image var
-            if imghdr.what(image) in self.fileTypes:
-                self.imageDirectory = os.path.dirname(image)
+        self.imageDirectory = os.path.dirname(self._state['directory'])
+        self.commandlineImage = self._state['directory']
+        try: # validate 
+            if imghdr.what(self.commandlineImage) in self.fileTypes:
                 self.get_source_images(self.imageDirectory)
-                self.commandlineImage = image
                 return self.commandlineImage
             else:
                 return sys.exit('Invalid filetype!')
@@ -424,6 +439,24 @@ class Rwall:
             return sys.exit('That\'s a directory, not a filename!')
         except FileNotFoundError:
             return sys.exit('No such file!')
+
+    def select_synced_image(self):
+        # selectively apply background from previous session to current DE
+        self.set_bgconfig()
+        image = self.bgconfig.get('Temp', 'Current Background')
+        try: # validate image, build list based on it, then return image var
+            if imghdr.what(image) in self.fileTypes:
+                self.imageDirectory = os.path.dirname(image)
+                self.get_source_images(self.imageDirectory)
+                self.syncedImage = image
+                return self.syncedImage
+            else:
+                return sys.exit('Invalid filetype!')
+        except IsADirectoryError:
+            return sys.exit('That\'s a directory, not a filename!')
+        except FileNotFoundError:
+            return sys.exit('No such file!')
+
 
     def select_next_image(self):
         # step to next image in imagesList array
@@ -459,7 +492,7 @@ class Rwall:
             switch='random'):
         # can be used to automate the script:
         # "rwall.py -l <dir>|<dirFlag> n 0 next" is automated 'next'
-        if Path(sys.argv[2]).is_dir():
+        if Path(self._state['directory']).is_dir():
             directory = 'directory'
         elif directory in self.dirFlags:
             directory = str(sys.argv[2])
@@ -477,11 +510,11 @@ class Rwall:
             if count == 0:
                 self.get_imagesList()
                 count = len(self.imagesList)
-                self.set_state('first')
+                self.set_state('image', 'first')
                 self.set_background()
             while count > 0:
                 currentDir = self.bgconfig.get('Temp', 'Current Directory')
-                self.set_state(switch)
+                self.set_state('image', switch)
                 self.set_background()
                 time.sleep(delay)
                 count -= 1
@@ -497,15 +530,6 @@ class Rwall:
             call('reset', shell=True)
             sys.exit('Slideshow terminated by user...')
 
-    def set_state(self, switch):
-        # accessor method for setting image acquisition option
-        # 'random', 'next', 'previous', 'first', and 'commandline'
-        self._state = switch
-
-    def get_state(self):
-        # accessor method for retrieving image acquisition option
-        return self._state
-
     def indexed_background(self):
         # records current background image path and acts as position key for
         # next/previous functions
@@ -516,7 +540,7 @@ class Rwall:
             self.bgconfig.write(configfile)
 
     def current_background(self):
-        # records actual background, regardless of image filters or state
+        # records actuall background, regardless of image filters or state
         self.set_bgconfig()
         self.bgDir = os.path.dirname(self.selectedImage)
         self.bgconfig.set('Temp', 'Current Directory', self.bgDir)
@@ -531,18 +555,18 @@ class Rwall:
         flag and assigns image acquisition function to self.selectedImage
         accordingly, which is then sent to detected desktop environment command
         """
-        if self._state == 'random':
+        if self._state['image'] == 'random':
             self.selectedImage = self.select_randomImage()
-        elif self._state == 'first':
+        elif self._state['image'] == 'first':
             self.selectedImage = self.select_firstImage()
-        elif self._state == 'next':
+        elif self._state['image'] == 'next':
             self.selectedImage = self.select_next_image()
-        elif self._state == 'previous':
+        elif self._state['image'] == 'previous':
             self.selectedImage = self.select_previous_image()
-        elif self._state == 'commandline':
+        elif self._state['image'] == 'commandline':
             self.selectedImage = self.select_cli_image()
-        elif self._state == 'sync':
-            self.selectedImage = self.sync_background()
+        elif self._state['image'] == 'sync':
+            self.selectedImage = self.select_synced_image()
 
         # test for valid filetypes, then index background
         if imghdr.what(self.selectedImage) in self.fileTypes:
@@ -555,9 +579,9 @@ class Rwall:
             # if self.config.getboolean('Defaults','Announce'):
             print('rWall skipped:\n{}\nIt is a corrupted file.\
                 '.format(self.get_indexed_background()))
-            if self._state == 'next':
+            if self._state['image'] == 'next':
                 self.selectedImage = self.select_next_image()
-            elif self._state == 'previous':
+            elif self._state['image'] == 'previous':
                 self.selectedImage = self.select_previous_image()
             self.indexed_background()
 
@@ -727,22 +751,10 @@ class Rwall:
     BACKGROUND FUNCTIONS
     """
 
-    def set_background(self, setall=False):
+    def set_background(self):
         # executes chosen desktop environment function to set wallpaper
         if 'APPDATA' in os.environ:
             return self.set_desktop_environment()
-        elif setall:
-            # sets all environs at once: doesn't work with LXDE, or Windows
-            deSets = dict( Openbox=self.set_openbox(), Xfce=self.set_xfce(), 
-                Mate=self.set_mate(), GNOME=self.set_gnome3(), 
-                KDE=self.set_kde() )
-            for DE, command in deSets.items():
-                try:
-                    call(command, shell=True)
-                    print('Background set for', DE)
-                except:
-                    continue
-            sys.exit('All available environs were set.')
         else:
             return call(self.set_desktop_environment(), shell=True)
 
@@ -751,6 +763,15 @@ class Rwall:
         self.set_bgconfig()
         self.indexedBG = \
         self.bgconfig.get('Temp', 'Indexed Background')
+        # if in windows, don't use xclip
+        if 'APPDATA' not in os.environ:
+            if depends['xclip'][1]:
+                # if not called on commandline, don't use xclip
+                getBgArgs = ['-b','--b','--printbackground']
+                if any(i in sys.argv for i in getBgArgs):
+                    call('echo -n {} | \
+                        xclip -selection clipboard'.format(self.appliedBG), 
+                        shell=True)
         return self.indexedBG
 
     def get_current_background(self):
@@ -768,12 +789,6 @@ class Rwall:
                         xclip -selection clipboard'.format(self.appliedBG), 
                         shell=True)
         return self.appliedBG
-
-    def sync_background(self):
-        # selectively apply background from previous session to current DE
-        self.set_bgconfig()
-        image = self.bgconfig.get('Temp', 'Current Background')
-        return self.select_cli_image(image)
 
     def edit_background(self):
         # uses the GIMP to edit current background; change editor in config file
@@ -794,23 +809,19 @@ class Rwall:
         # stdout messages to user; silence by setting config "announce" to "no"
         self.set_config()
         self.currentDir = self.bgconfig.get('Temp', 'Current Directory')
-        self.get_state()
+        self.get_state('image')
         aspectRatio = self.config.get(
             'Wallpaper Modes', 'Aspect Ratio Filter', fallback='none')
-        if self.config.getboolean('Defaults','Announce'):
+        if '--verbose' in sys.argv:
             print('aspect ratio filter: {}'.format(aspectRatio))
             if self.desktopSession in self.deList:
                 announceDE = self.desktopSession
-            elif 'APPDATA' in os.environ:
-                announceDE = 'Windows'
             else:
                 announceDE = 'feh'
             print('{} wallpaper mode set to \'{}\'\
                 '.format(announceDE,self.wallpaperMode))
             print('{} wallpaper applied from:\
-                \n{}'.format(self._state,self.currentDir))
-            print('Don\'t want to see this message? ' +
-                'Set "announce" to "no" in rwall.conf.')
+                \n{}'.format(self._state['image'],self.currentDir))
 
 def main(argv):
     rwall = Rwall()
@@ -826,7 +837,7 @@ def main(argv):
         formatter_class=argparse.RawDescriptionHelpFormatter,
         description=textwrap.dedent("""\
         rWall randomizes your desktop background image in GNOME3,
-        Cinnamon2, MATE, KDE 4 - 5, Xfce 4.10, Openbox, LXDE, and Windows7 - 10; 
+        Cinnamon2, MATE, KDE 4 & 5, Xfce 4.10, Openbox, LXDE, and Windows 7-10; 
         if none of these environs are detected, then rWall attempts to use feh 
         to set your background.
         
@@ -840,14 +851,20 @@ def main(argv):
         rWall, developed by rockhazard and licensed under GPL3.0. There are no 
         warranties expressed or implied.
         """))
-    parser.add_argument('-v', '--version', 
-        help='print rWall\'s version and exit', action='store_true')
+    parser.add_argument('-v', '--version', help='print version info then exit', 
+        version='rWall 3.5m "Akira", GPL3.0 (c) 2015, by rockhazard',
+        action='version')
     parser.add_argument('-c', '--config',
         help='edit the configuration file, set initially to the user\'s \
         default text editor' , action='store_true')
+    parser.add_argument('--verbose',
+        help='print detailed feedback on rWall functions' , action='store_true')
+    parser.add_argument('-a', '--filter', help=
+        'filter images by one of these aspect ratios: sd480, hd1050, hd1080, \
+        hd1050x2, and hd1080x2', nargs=1, metavar=('ASPECT_RATIO'))
     parser.add_argument('-d', '--directory', help=
         'random background from DIRECTORY, e.g. "rwall.py -d ~/Pictures"',
-        nargs=1, required=False)
+        nargs=1)
     parser.add_argument('-1', '--directory1', 
         help='random background from images in first preset directory', 
         action='store_true')
@@ -871,10 +888,13 @@ def main(argv):
         image directory', action='store_true')
     parser.add_argument('-i', '--image', help=
         'apply IMAGE as wallpaper: "rwall.py -i /path/to/file"',
-        nargs=1, required=False)
+        nargs=1)
     parser.add_argument('-f', '--first', help=
         'first background from DIRECTORY, e.g. "rwall.py -f ~/Pictures"',
-        nargs=1, metavar=('DIRECTORY'), required=False)
+        nargs=1, metavar=('DIRECTORY'))
+    parser.add_argument('-s', '--sync', help=
+        'synchronize wallpaper with last execution of rWall.', 
+        action='store_true')
     parser.add_argument('-l', '--loop', help=
         """create a background slideshow by looping the background in 
         DIRECTORY directory, every DELAY seconds, COUNT number of times, 
@@ -886,23 +906,15 @@ def main(argv):
         help=
         'prints filename of last-applied background to stdout and clipboard', 
         action='store_true')
-    parser.add_argument('-s', '--syncdesktop',
-        help=
-        'applies background from the last desktop environment in which rWall \
-        was executed.  Used to selectively synchronize your desktop themes. \
-        Doesn\'t work with Windows', action='store_true')
-    parser.add_argument('-r', '--syncall',
-        help=
-        'sets all available desktop environments to the last image applied by \
-        rWall.  Synchronizes all compatible desktops at once. \
-        Doesn\'t work with LXDE or Windows.', action='store_true')
     parser.add_argument('-e', '--editbackground',
-        help='edit the current background, defautled to the GIMP', 
+        help='edit the current background, defaulted to the GIMP', 
         action='store_true')
     args = parser.parse_args()
 
-    if args.version:
-        sys.exit('rWall 3.5m "Akira", GPL3.0 (c) 2015, by rockhazard')
+    if args.filter:
+        rwall.set_state('filter', args.filter[0])
+    if args.sync:
+        rwall.set_state('image', 'sync')
     elif args.directory1:
         rwall.change_directory('directory1')
     elif args.directory2:
@@ -914,31 +926,28 @@ def main(argv):
     elif args.directory5:
         rwall.change_directory('directory5')
     elif args.next:
-        rwall.set_state('next')
+        rwall.set_state('image', 'next')
     elif args.previous:
-        rwall.set_state('previous')
+        rwall.set_state('image', 'previous')
     elif args.image:
-        rwall.set_state('commandline')
+        rwall.set_state('image', 'commandline')
+        rwall.set_state('directory', args.image[0])
     elif args.printbackground:
         sys.exit(rwall.get_current_background())
-    elif args.syncdesktop:
-        rwall.set_state('sync')
-        print('Background synced with previous session.')
-    elif args.syncall:
-        rwall.set_state('sync')
-        rwall.set_background(True)
     elif args.editbackground:
         sys.exit(rwall.edit_background())
     elif args.loop:
-        sys.exit(rwall.start_slideshow(str(sys.argv[2]), int(sys.argv[3]),
-            int(sys.argv[4]), str(sys.argv[5])))
+        rwall.set_state('directory', args.loop[0])
+        sys.exit(rwall.start_slideshow(args.loop[0], int(args.loop[1]),
+            int(args.loop[2]), args.loop[3]))
     elif args.directory:
-        if  Path(sys.argv[2]).is_dir():
+        if  Path(args.directory[0]).is_dir():
+            rwall.set_state('directory', args.directory[0])
             rwall.change_directory('directory')
         else:
             sys.exit('Invalid directory! Check commandline argument.')
     elif args.first:
-        rwall.set_state('first')
+        rwall.set_state('image', 'first')
         if  Path(sys.argv[2]).is_dir():
             rwall.change_directory('directory')
         else:
