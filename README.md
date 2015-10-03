@@ -23,7 +23,7 @@ rWall automatically detects the current user's environment then selects a random
 rWall mostly requires setup in Windows, KDE, and Openbox. KDE support requires some trivial setup via "Default Desktop Settings". Using the slideshow option, set "Change images every" to lowest, and select ~/.config/rwall/kde/mon1, then apply settings.  Openbox requires the installation of feh and the application of feh's background settings in autostart.sh.
 
 * Dependencies:
-rWall requires Python 3.2+, feh, and one of the supported desktop environments (GNOME3, Cinnamon2, KDE 4.x, Xfce 4.10, or Openbox).  Image filtering requires Python Pillow libraries be installed, but not doing so won't break the script.  rWall's only hard dependency is feh, if you are in Openbox or an undetected Linux environment.
+rWall requires Python 3.2+, feh, and one of the supported desktop environments (GNOME3, Cinnamon2, KDE 4.x, Xfce 4.10, or Openbox).  Image filtering requires Python Pillow libraries be installed, but not doing so won't break the script.  In Linux, rWall's only hard dependency is feh, if you are in Openbox or an undetected Linux environment.
 
 * Debian/Ubuntu/Linux Mint:
 `sudo apt-get install python3-pil xclip feh`
