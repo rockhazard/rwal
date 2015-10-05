@@ -848,7 +848,7 @@ def main(argv):
         warranties expressed or implied.
         """))
     parser.add_argument('-v', '--version', help='print version info then exit', 
-        version='rWall 3.5m "Akira", GPL3.0 (c) 2015, by rockhazard',
+        version='rWall 3.5n "Akira", GPL3.0 (c) 2015, by rockhazard',
         action='version')
     parser.add_argument('-c', '--config',
         help='edit the configuration file, set initially to the user\'s \
