@@ -55,7 +55,7 @@ from subprocess import call
 
 # doing in-script dependency checks, because absence of packages will reduce 
 # functionality but not break the script, therefore warn user, but proceed
-depends = dict( xclip=( '/usr/bin/xclip', True ), feh=( '/usr/bin/feh', True ) )
+depends = dict( xclip=[ '/usr/bin/xclip', True ], feh=[ '/usr/bin/feh', True ] )
 modules = dict( Pillow=None )
 
 try: # check for 3rd party modules
@@ -72,17 +72,12 @@ if 'APPDATA' not in os.environ:
             print('Please install:', Path(package).name)
 
 # import search path appended for configuration and module files
-# sys.path.append('{}/.config/rwall/'.format(os.path.expanduser('~')))
+# sys.path.append('{}/.config/rwall/'.format(os.environ['HOME']))
 
 class Rwall:
     def __init__(self, switch='random', **kwargs):  # classwide perams
         # User's home directory
         self.home = os.path.expanduser('~')
-
-        # recognized desktop environments
-        self.deList = (
-            'cinnamon', 'gnome', 'ubuntu', 'unity', 'mate', 'plasma', 
-            'kde-plasma', 'openbox', 'xfce', 'lxde')
 
         # directory flags, used for argument test in start_slideshow()
         self.dirFlags = ('directory1', 'directory2', 'directory3', 'directory4',
@@ -91,20 +86,13 @@ class Rwall:
         # desktop environment detection variable
         self.desktopSession = os.environ.get('DESKTOP_SESSION')
 
-        # wallpaper mode
-        self.wallpaperMode = 'scaled'
-
-        # display if modes settings wrong or missing
-        self.wallpaperModeError = (
-            'WARNING: configuration fault detected\n' + 
-            'check modes in rwall.conf\n' + 'fallback mode applied')
-        
         # valid image types; to expand, use imghdr.what() values
         self.fileTypes = ('jpeg', 'png')
 
         # configuration files
         self.configFile = Path(self.home, '.config/rwall/rwall.conf')
         self.bgFile = Path(self.home, '.config/rwall/background.conf')
+
         # class-wide dictionary and its defaults
         self._state = kwargs
 
@@ -117,6 +105,20 @@ class Rwall:
         # image acquisition switch determines method of image selection: 
         # 'random', 'next', 'previous', 'commandline', 'first'
         self._state['image'] = switch
+
+        # fallback wallpaper modes
+        if 'openbox' in self.desktopSession:
+            self._state['mode'] = '--bg-max'
+        elif 'xfce' in self.desktopSession:
+            self._state['mode'] = '4'
+        else:
+            self._state['mode'] = 'scaled'
+
+        # display if modes settings wrong or missing
+        self._state['mode_error'] = textwrap.dedent("""\
+            WARNING: configuration fault detected
+            check modes in rwall.conf
+            fallback mode applied""")
 
         # list of images to be randomized and/or sorted
         self.sourceImages = []
@@ -305,6 +307,8 @@ class Rwall:
             self.desktopEnvironment = self.set_mate()
         elif self.desktopSession == 'xfce':
             self.desktopEnvironment = self.set_xfce()
+        elif self.desktopSession == 'openbox':
+            self.desktopEnvironment = self.set_openbox()
         elif 'APPDATA' in os.environ:
              self.desktopEnvironment = self.set_windows()
         else:
@@ -495,7 +499,7 @@ class Rwall:
         if Path(self._state['directory']).is_dir():
             directory = 'directory'
         elif directory in self.dirFlags:
-            directory = str(sys.argv[2])
+            directory = self._state['directory']
         else:
             sys.exit('Invalid argument!')
         self.change_directory(directory)
@@ -613,15 +617,14 @@ class Rwall:
 
         # fallback in case of user error or missing/corrupted config file
         if imageConfig in gnomeMode:
-            self.wallpaperMode = imageConfig
+            self._state['mode'] = imageConfig
         else:
-            # self.wallpaperMode = 'scaled'
-            print(self.wallpaperModeError)
+            print(self._state['mode_error'])
 
         image = self.select_image()
         self.gnome3 = \
             'gsettings set org.gnome.desktop.background picture-options\
-            {};'.format(self.wallpaperMode) + \
+            {};'.format(self._state['mode']) + \
             'gsettings set org.gnome.desktop.background picture-uri \
             \'file://{}\''.format(image)
         return self.gnome3
@@ -639,16 +642,15 @@ class Rwall:
 
         # fallback in case of user error or missing/corrupted config file
         if imageConfig in mateMode:
-            self.wallpaperMode = imageConfig
+            self._state['mode'] = imageConfig
         else:
-            # self.wallpaperMode = 'scaled'
-            print(self.wallpaperModeError)
+            print(self._state['mode_error'])
 
         image = self.select_image()
         self.mate = \
             'gsettings set org.mate.background picture-options {0}; \
             gsettings set org.mate.background picture-filename \
-            \'{1}\''.format(self.wallpaperMode,image)
+            \'{1}\''.format(self._state['mode'],image)
         return self.mate
 
     def set_kde(self):
@@ -675,10 +677,9 @@ class Rwall:
 
         # fallback in case of user error or missing/corrupted config file
         if imageConfig in xfceMode:
-            self.wallpaperMode = imageConfig
+            self._state['mode'] = imageConfig
         else:
-            # self.wallpaperMode = '4'
-            print(self.wallpaperModeError)
+            print(self._state['mode_error'])
 
         image = self.select_image()
         self.xfce = \
@@ -689,7 +690,7 @@ class Rwall:
                     -t string -s "" 2> /dev/null
                     xfconf-query -c xfce4-desktop -p $i -s "{0}" 2> /dev/null
                     xfconf-query -c xfce4-desktop -p $i -s "{1}" 2> /dev/null
-            done""".format(self.wallpaperMode,image)
+            done""".format(self._state['mode'],image)
         return self.xfce
 
     def set_lxde(self):
@@ -703,14 +704,13 @@ class Rwall:
 
         # fallback in case of user error or missing/corrupted config file
         if imageConfig in lxdeMode:
-            self.wallpaperMode = imageConfig
+            self._state['mode'] = imageConfig
         else:
-            # self.wallpaperMode = 'scaled'
-            print(self.wallpaperModeError)
+            print(self._state['mode_error'])
 
         image = self.select_image()
         self.lxde = 'pcmanfm --set-wallpaper \'{}\' \
-        --wallpaper-mode={}'.format(image,self.wallpaperMode)
+        --wallpaper-mode={}'.format(image,self._state['mode'])
         return self.lxde
 
     def set_openbox(self):
@@ -727,13 +727,12 @@ class Rwall:
 
             # fallback in case of user error or missing/corrupted config file
             if imageConfig in openboxMode:
-                self.wallpaperMode = imageConfig
+                self._state['mode'] = imageConfig
             else:
-                # self.wallpaperMode = '--bg-max'
-                print(self.wallpaperModeError)
+                print(self._state['mode_error'])
 
             image = self.select_image()
-            self.openbox = 'feh {} \'{}\''.format(self.wallpaperMode,image)
+            self.openbox = 'feh {} \'{}\''.format(self._state['mode'],image)
             return self.openbox
         else:
             print('Openbox and any undetected environs require feh.')
@@ -807,19 +806,16 @@ class Rwall:
 
     def announce(self):
         # stdout messages to user; silence by setting config "announce" to "no"
-        self.set_config()
         self.currentDir = self.bgconfig.get('Temp', 'Current Directory')
-        self.get_state('image')
-        aspectRatio = self.config.get(
+        if self._state['filter']:
+            aspectRatio = self._state['filter']
+        else:
+            aspectRatio = self.config.get(
             'Wallpaper Modes', 'Aspect Ratio Filter', fallback='none')
         if '--verbose' in sys.argv:
             print('aspect ratio filter: {}'.format(aspectRatio))
-            if self.desktopSession in self.deList:
-                announceDE = self.desktopSession
-            else:
-                announceDE = 'feh'
             print('{} wallpaper mode set to \'{}\'\
-                '.format(announceDE,self.wallpaperMode))
+                '.format(self.desktopSession, self._state['mode']))
             print('{} wallpaper applied from:\
                 \n{}'.format(self._state['image'],self.currentDir))
 
@@ -852,7 +848,7 @@ def main(argv):
         warranties expressed or implied.
         """))
     parser.add_argument('-v', '--version', help='print version info then exit', 
-        version='rWall 3.5n "Akira", GPL3.0 (c) 2015, by rockhazard',
+        version='rWall 3.5m "Akira", GPL3.0 (c) 2015, by rockhazard',
         action='version')
     parser.add_argument('-c', '--config',
         help='edit the configuration file, set initially to the user\'s \
@@ -948,7 +944,8 @@ def main(argv):
             sys.exit('Invalid directory! Check commandline argument.')
     elif args.first:
         rwall.set_state('image', 'first')
-        if  Path(sys.argv[2]).is_dir():
+        if  Path(args.first[0]).is_dir():
+            rwall.set_state('directory', args.first[0])
             rwall.change_directory('directory')
         else:
             sys.exit('Invalid directory! Check commandline argument.')
