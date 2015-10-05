@@ -896,7 +896,9 @@ def main(argv):
         DIRECTORY directory, every DELAY seconds, COUNT number of times, 
         e.g. "rwall.py -l ~/Pictures 5 10". DELAY must be greater than 0.\
         COUNT of 0 sets COUNT to number of images in given directory. SWITCH
-        is either "random" or "next", and describes the order of the loop.""", 
+        is either "random" or "next", and describes the order of the loop.
+        DIRECTORY can also be 1 through 5, or directory1 through directory5.
+        These are mapped to your preset directories in rwall.conf.""", 
         nargs=4, metavar=('DIRECTORY', 'DELAY','COUNT', 'SWITCH'))
     parser.add_argument('-b', '--printbackground',
         help=
