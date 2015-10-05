@@ -55,7 +55,7 @@ from subprocess import call
 
 # doing in-script dependency checks, because absence of packages will reduce 
 # functionality but not break the script, therefore warn user, but proceed
-depends = dict( xclip=[ '/usr/bin/xclip', True ], feh=[ '/usr/bin/feh', True ] )
+depends = dict( xclip=( '/usr/bin/xclip', True ), feh=( '/usr/bin/feh', True ) )
 modules = dict( Pillow=None )
 
 try: # check for 3rd party modules
@@ -72,7 +72,7 @@ if 'APPDATA' not in os.environ:
             print('Please install:', Path(package).name)
 
 # import search path appended for configuration and module files
-# sys.path.append('{}/.config/rwall/'.format(os.environ['HOME']))
+# sys.path.append('{}/.config/rwall/'.format(os.path.expanduser('~')))
 
 class Rwall:
     def __init__(self, switch='random', **kwargs):  # classwide perams
