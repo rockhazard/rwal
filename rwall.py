@@ -360,7 +360,9 @@ class Rwall:
             screen_height = root.winfo_screenheight()
             return screen_width/screen_height
         else:
-            sys.exit('Please install python3-tk package.')
+            print(textwrap.dedent("""\
+                Automatic aspect ratio detection disabled.
+                Please install python3-tk package."""))
 
     def image_filter(self, *args):
         # allows filtering of images by aspect ration, as set in config file
