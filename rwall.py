@@ -52,18 +52,22 @@ import ctypes
 from pathlib import Path
 from fractions import Fraction
 from subprocess import call
-import tkinter as tk
 
 # doing in-script dependency checks, because absence of packages will reduce 
 # functionality but not break the script, therefore warn user, but proceed
 depends = dict( xclip=( '/usr/bin/xclip', True ), feh=( '/usr/bin/feh', True ) )
-modules = dict( Pillow=None )
+modules = dict( Pillow=None, Tkinter=None )
 
 try: # check for 3rd party modules
     from PIL import Image
     modules['Pillow'] = True
 except ImportError:
     modules['Pillow'] = False
+try: # check for 3rd party modules
+    import tkinter as tk
+    modules['Tkinter'] = True
+except ImportError:
+    modules['Tkinter'] = False
 
 # check for Linux dependencies
 if 'APPDATA' not in os.environ:
@@ -350,10 +354,13 @@ class Rwall:
         return self.sourceImages
 
     def get_screen_rez(self):
-        root = tk.Tk()
-        screen_width = root.winfo_screenwidth()
-        screen_height = root.winfo_screenheight()
-        return screen_width/screen_height
+        if modules['Tkinter']:
+            root = tk.Tk()
+            screen_width = root.winfo_screenwidth()
+            screen_height = root.winfo_screenheight()
+            return screen_width/screen_height
+        else:
+            sys.exit('Please install python3-tk package.')
 
     def image_filter(self, *args):
         # allows filtering of images by aspect ration, as set in config file
