@@ -346,7 +346,11 @@ class Rwall:
             sys.exit('Build image list failed: check directory.')
 
         # if aspect ratio filter is set, filter images
-        self.image_filter(self.sourceImages)
+        if modules['Pillow']:
+            self.image_filter(self.sourceImages)
+        else:
+            print(
+            'NOTICE: Image filtering disabled pending installation of Pillow.')
 
         # prevent runaway append to images.txt during slideshow
         if not self._state['slideshow']:
@@ -359,52 +363,47 @@ class Rwall:
             screen_width = root.winfo_screenwidth()
             screen_height = root.winfo_screenheight()
             return screen_width/screen_height
-        else:
+        elif self._state['filter'] == 'auto':
             print(textwrap.dedent("""\
                 Automatic aspect ratio detection disabled.
                 Please install python3-tk package."""))
 
     def image_filter(self, *args):
         # allows filtering of images by aspect ration, as set in config file
-        if modules['Pillow']:
-            # container for final filtered list
-            self.filteredImages = []
-            # valid aspect ratios
-            ratios = dict( sd480 = 4/3, hd1050 = 8/5, hd1080 = 16/9, 
-                hd1050x2 = 16/5, hd1080x2 = 32/9, auto = self.get_screen_rez() )
-            if self._state['filter']:
-                # get aspect ratio filter setting from commandline
-                aspectRatio = self._state['filter']
-            else:
-                # get config file setting
-                aspectRatio = self.config.get(
-                'Wallpaper Modes', 'Aspect Ratio Filter', fallback='none')
-            if aspectRatio in ratios:
-                for pic in self.sourceImages:
-                    # get image's aspect ratio, then match against filter
-                    try:
-                        im = Image.open(pic)
-                        x, y = im.size
-                        imagef = Fraction(x,y)
-                        im_x = imagef.numerator
-                        im_y = imagef.denominator
-                        if im_x/im_y == ratios[aspectRatio]:
-                            self.filteredImages.append(pic)
-                    except IOError: # skip on corrupt image
-                        continue
-                if self.filteredImages == []:
-                    sys.exit(
-                    'No {} aspect ratio images found.'.format(aspectRatio))
-                else:
-                    self.sourceImages = self.filteredImages
-                    return self.sourceImages
-            elif aspectRatio not in ['None', 'NONE', 'no', 'none','']:
-                print(
-                'Invalid value. Check the image filter setting.')
+        # container for final filtered list
+        self.filteredImages = []
+        # valid aspect ratios
+        ratios = dict( sd480 = 4/3, hd1050 = 8/5, hd1080 = 16/9, 
+            hd1050x2 = 16/5, hd1080x2 = 32/9, auto = self.get_screen_rez() )
+        if self._state['filter']:
+            # get aspect ratio filter setting from commandline
+            aspectRatio = self._state['filter']
         else:
+            # get config file setting
+            aspectRatio = self.config.get(
+            'Wallpaper Modes', 'Aspect Ratio Filter', fallback='none')
+        if aspectRatio in ratios:
+            for pic in self.sourceImages:
+                # get image's aspect ratio, then match against filter
+                try:
+                    im = Image.open(pic)
+                    x, y = im.size
+                    imagef = Fraction(x,y)
+                    im_x = imagef.numerator
+                    im_y = imagef.denominator
+                    if im_x/im_y == ratios[aspectRatio]:
+                        self.filteredImages.append(pic)
+                except IOError: # skip on corrupt image
+                    continue
+            if self.filteredImages == []:
+                sys.exit(
+                'No {} aspect ratio images found.'.format(aspectRatio))
+            else:
+                self.sourceImages = self.filteredImages
+                return self.sourceImages
+        elif aspectRatio not in ['None', 'NONE', 'no', 'none','']:
             print(
-            'NOTICE: Image filtering disabled pending installation of Pillow.')
-
+            'Invalid value. Check the image filter setting.')
 
     def write_imagesListFile(self):
         """
