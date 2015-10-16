@@ -90,8 +90,10 @@ class Rwall:
 
         # desktop environment detection variable
         self.desktopSession = os.environ.get('DESKTOP_SESSION')
+        if 'DESKTOP_SESSION' not in os.environ:
+            self.desktopSession = os.environ['OS']
         if self.desktopSession == None:
-            self.desktopSession = 'Windows'
+            self.desktopSession = 'Unknown'
 
         # valid image types; to expand, use imghdr.what() values
         self.fileTypes = ('jpeg', 'png')
