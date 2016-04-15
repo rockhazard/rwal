@@ -335,19 +335,24 @@ class Rwall:
         """
         create list of image files from given directory
         """
-        if Path(self.imageDirectory).is_dir:
-            # regex pattern matches "*.jpg|jpeg|png"
-            imagePattern = re.compile(r'(.+\.(png|jpg|jpeg)$)')
-            for root,dirnames,filenames in os.walk(self.imageDirectory):
-                for file in filenames:
-                    path = str(Path(root, file))
-                    try:
-                        self.sourceImages.append(
-                            imagePattern.match(path).group())
-                    except:
-                        continue
-        else:
-            sys.exit('Build image list failed: check directory.')
+        # regex pattern matches "*.jpg|jpeg|png"
+        imagePattern = re.compile(r'(.+\.(png|jpg|jpeg)$)')
+        for root,dirnames,filenames in os.walk(self.imageDirectory):
+            for file in filenames:
+                path = str(Path(root, file))
+                try:
+                    self.sourceImages.append(
+                        imagePattern.match(path).group())
+                except:
+                    continue
+
+        # check if image list is empty
+        try:
+            if self.sourceImages[0]:
+                if self._state['verbose']:
+                    print('Image list build successful!')
+        except IndexError:
+            sys.exit('No valid images in "{}"'.format(self.imageDirectory))
 
         # if aspect ratio filter is set, filter images
         if modules['Pillow']:
