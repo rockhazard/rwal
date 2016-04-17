@@ -795,11 +795,9 @@ class Rwall:
         # if in windows, don't use xclip
         if 'APPDATA' not in os.environ:
             if depends['xclip'][1]:
-                # if not called on commandline, don't use xclip
-                if self._state['printbackground']:
-                    call('echo -n {} | \
-                        xclip -selection clipboard'.format(self.appliedBG), 
-                        shell=True)
+                call('echo -n {} | \
+                    xclip -selection clipboard'.format(self.appliedBG), 
+                    shell=True)
         return self.appliedBG
 
     def edit_background(self):
@@ -943,7 +941,6 @@ def main(argv):
         rwall.set_state('image', 'commandline')
         rwall.set_state('directory', args.image[0])
     elif args.printbackground:
-        rwall.set_state('printbackground', True)
         sys.exit(rwall.get_record_background())
     elif args.editbackground:
         sys.exit(rwall.edit_background())
