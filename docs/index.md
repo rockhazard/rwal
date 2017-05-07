@@ -65,3 +65,6 @@ v3.5 "Akira"
 ### Contribution guidelines ###
 
 Contact me at rockhazardz@gmail.com
+
+### rockhazard home
+[rockhazard home](https://rockhazard.github.io/index.html)
