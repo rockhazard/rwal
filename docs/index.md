@@ -24,7 +24,7 @@ rWall mostly requires setup in Windows, KDE, and Openbox. KDE support requires s
 * Dependencies: 
 rWall requires Python 3.2+, feh, and one of the supported desktop environments (GNOME3, Cinnamon2, KDE 4.x, Xfce 4.10, or Openbox).  Image filtering requires Python3 Pillow and Tkinter libraries be installed, but not doing so won't break the script.  In Linux, rWall's only hard dependency is feh, if you are in Openbox or an undetected Linux environment.
 * Debian/Ubuntu/Linux Mint: 
-sudo apt-get install python3-pil python3-tk xclip feh`
+`sudo apt-get install python3-pil python3-tk xclip feh`
 * Windows 7, 8, and 10: 
 Windows users must install Python 3.4 (not 3.5) and get the Pillow wheel from: http://www.lfd.uci.edu/~gohlke/pythonlibs/
 Launch cmd.exe and run `pip install [name of Pillow file]` from Pillow's
