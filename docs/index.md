@@ -1,12 +1,12 @@
 # README #
 
-rWall Stable
+## rWall ##
 
-### What is this repository for? ###
+## What is this repository for? ##
 
 rWall automatically detects the current user's environment then selects a random image from a directory.  The script applies that image as a background. It supports GNOME3 (Gnome Shell, Unity, Cinnamon, Mate), KDE4 & 5, XFCE 4.10, LXDE, Openbox, MacOS X, and Windows 7, 8, and 10.
 
-### Features ###
+## Features ##
 
 * Auto-detects most environments, such as Windows and all common Linux desktop environments
 * Randomly selects images from one of five user-preset directories, in addition to the default directory.
@@ -18,29 +18,23 @@ rWall automatically detects the current user's environment then selects a random
 * Edit the current background with a quick command.
 * Lightweight and highly scriptable, rWall is designed to be used with shortcuts and other programs, in addition toe being tiny and highly portable.
 
-### How do I get set up? ###
+## How do I get set up? ##
 
 rWall mostly requires setup in Windows, KDE, and Openbox. KDE support requires some trivial setup via "Default Desktop Settings". Using the slideshow option, set "Change images every" to lowest, and select ~/.config/rwall/kde/mon1, then apply settings.  Openbox requires the installation of feh and the application of feh's background settings in autostart.sh.
-
-* Dependencies:
+### >> Dependencies: 
 rWall requires Python 3.2+, feh, and one of the supported desktop environments (GNOME3, Cinnamon2, KDE 4.x, Xfce 4.10, or Openbox).  Image filtering requires Python3 Pillow and Tkinter libraries be installed, but not doing so won't break the script.  In Linux, rWall's only hard dependency is feh, if you are in Openbox or an undetected Linux environment.
-
-* Debian/Ubuntu/Linux Mint:
+### >> Debian/Ubuntu/Linux Mint: 
 `sudo apt-get install python3-pil python3-tk xclip feh`
-
-* Windows 7, 8, and 10:
-Windows users must install Python 3.4 (not 3.5) and get the Pillow wheel from:
-http://www.lfd.uci.edu/~gohlke/pythonlibs/
+### >> Windows 7, 8, and 10: 
+Windows users must install Python 3.4 (not 3.5) and get the Pillow wheel from: http://www.lfd.uci.edu/~gohlke/pythonlibs/
 Launch cmd.exe and run `pip install [name of Pillow file]` from Pillow's
 directory.
-
-* Configuration:
+### >> Configuration: 
 rWall autoconfigures itself for the supported environments, for the most part.  A settings folder is created as `[home]/.config/rwall`.  Rwall.conf, background.conf, and images.txt files are created there. Use rwall.conf to set your image directories.
-
-* Deployment instructions:
+### >> Deployment instructions: 
 Just download and run the script.  Setup shortcuts for rwall.py, rwall.py -n, and rwall.py -p to turn your background into a rapid photo album experience.
 
-### Changelog ###
+## Changelog ##
 
 v2.5 "Itchy"
 
@@ -65,3 +59,5 @@ v3.5 "Akira"
 ### Contribution guidelines ###
 
 Contact me at rockhazardz@gmail.com
+
+### [rockhazard home](https://rockhazard.github.io/index.html)
