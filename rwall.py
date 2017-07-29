@@ -525,6 +525,8 @@ class Rwall:
         self.set_bgconfig()
         self.get_source_images()
         self.write_images_list_file()
+        self.selectedImage = self.sourceImages[0]
+        self.index_background()
         try:
             # count=0 sets count to number of files in imagesList
             # starts slideshow from first images in list
