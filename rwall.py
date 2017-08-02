@@ -42,7 +42,7 @@ AUTHOR: Ike Davis, ike.davis.net@gmail.com
 ACKNOWLEDGMENTS: xfconf shell string: Peter Levi (please go check out Variety!
 http://peterlevi.com/variety/)
 COMPANY: ---
-VERSION: rWall 3.6 "Blinky" by Ike Davis (c)2016
+VERSION: rWall 3.5q "Akira", by rockhazard (c)2016
 CREATED: 09/13/2015
 REVISION: 07/27/2017
 LICENSE: GPL 3.0, no warranty expressed or implied
@@ -113,11 +113,8 @@ def main(argv):
                                        args.slideshow[2],
                                        args.slideshow[3]))
     elif args.directory:
-        if Path(args.directory[0]).is_dir():
-            state.set_state('directory', args.directory[0])
-            rimage.change_directory('directory')
-        else:
-            sys.exit('Invalid directory! Check commandline argument.')
+        state.set_state('directory', args.directory[0])
+        rimage.change_directory('directory')
     elif args.first:
         state.set_state('image_action', 'first')
         if Path(args.first[0]).is_dir():

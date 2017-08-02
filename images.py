@@ -41,8 +41,11 @@ class ImageCollector(State):
         # check path validity, then return path for processing
         if Path(self.imageDirectory).is_dir():
             return self.imageDirectory
+        elif Path(self.imageDirectory).is_file():
+            if Path(self.imageDirectory).name.endswith(('txt', 'list', 'db')):
+                self.set_state('list', self.imageDirectory)
         else:
-            sys.exit('Invalid directory!')
+            sys.exit('Invalid directory or file list!')
 
     def record_dir(self):
         """records background image path to background.conf"""
