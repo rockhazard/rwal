@@ -522,7 +522,6 @@ class Rwall:
         if switch not in ('next', 'random'):
             sys.exit('Error: SWITCH must be either "random" or "next"')
         self.change_directory(directory)
-        self.set_bgconfig()
         self.get_source_images()
         self.write_images_list_file()
         self.selectedImage = self.sourceImages[0]
