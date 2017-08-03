@@ -43,16 +43,11 @@ Just download and run the script.  Setup shortcuts for rwall.py, rwall.py -n, an
 
 ### Changelog ###
 
-v2.5 "Itchy"
+v3.6 "Blinky"
 
-* Last shell script version
-
-v3.0 "Scratchy"
-
-* First Python3 version.
-* Improved speed and image collection
-* Enhanced features, like slideshow
-* Next/Previous works in all environs now
+* optionally use newline-separated lists of image paths instead of directories
+* '--reshuffle': random selection from current image's directory and below
+* '--present': random selection from the present working directory, ignoring subdirectories 
 
 v3.5 "Akira"
 
@@ -63,10 +58,17 @@ v3.5 "Akira"
 * Improved error handling and bugfixes
 * Image filtering with Pillow
 
-v3.6 "Blinky"
+v3.0 "Scratchy"
 
-* Added list, reshuffle, and present (working directory) features
+* First Python3 version.
+* Improved speed and image collection
+* Enhanced features, like slideshow
+* Next/Previous works in all environs now
 
-### Contribution guidelines ###
+v2.5 "Itchy"
 
-Contact me at rockhazardz@gmail.com
+* Final shell script version
+
+### Contact ###
+
+ike.davis.net@gmail.com

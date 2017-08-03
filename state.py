@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
-
+"""
+A singleton inherited by the other classes in rWall
+"""
 import os, configparser
 from pathlib import Path
 from textwrap import dedent
 
 
 class State:
-    """monoState: distribute dictionary and getter/setter to child objects"""
+    """distribute dictionary and getter/setter to child objects"""
     _state = dict(
         home=os.path.expanduser('~'),
         verbose=False,

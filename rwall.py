@@ -52,7 +52,7 @@ from pathlib import Path
 from state import State
 from config import Config
 from images import ImageCollector
-from environment import Env
+from environment import Environment
 from arguments import build_args
 from slideshow import SlideShow
 
@@ -65,7 +65,7 @@ def main(argv):
     config.set_bgconfig()
     state = State()
     rimage = ImageCollector()
-    renv = Env()
+    renv = Environment()
 
     def set_background():
         # acquire image based on user options then apply to background

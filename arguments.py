@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+"""Module for describing and parsing commandline arguments"""
 import argparse, sys
 from pathlib import Path
 from textwrap import dedent

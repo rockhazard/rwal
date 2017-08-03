@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+"""Module for writing and reading the rWall configuration files"""
 import os, sys, subprocess
 from state import State
 from pathlib import Path
@@ -133,7 +133,7 @@ class Config(State):
                 'created background configuration file: {}'.format(self.bgFile))
         else:
             self.bgConfig.read(str(self.bgFile))
-            
+
     def edit_config(self):
         self.set_config()
         edit_conf = self.config.get('Defaults', 'Default Config Editor')

@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Turn the user's background into a slideshow."""
+"""A module that turns the user background into a slideshow."""
 
 import sys, os, time, subprocess
 from state import State
 from images import ImageCollector
-from environment import Env
+from environment import Environment
 from pathlib import Path
 
 
@@ -12,7 +12,7 @@ class SlideShow(State):
     def __init__(self):
         super(SlideShow, self).__init__()
         self.images = ImageCollector()
-        self.env = Env()
+        self.env = Environment()
 
     def start_slideshow(self, directory, delay, count, switch):
         listExt = ('txt', 'list', 'db')
@@ -92,11 +92,3 @@ class SlideShow(State):
             subprocess.call(com, shell=True)
         else:
             subprocess.call('cls', shell=True)
-
-
-def main():
-    slideshow = SlideShow()
-
-
-if __name__ == '__main__':
-    main()

@@ -4,7 +4,7 @@
 
 ## What is this repository for? ##
 
-rWall automatically detects the current user's environment then selects a random image from a directory.  The script applies that image as a background. It supports GNOME3 (Gnome Shell, Unity, Cinnamon, Mate), KDE4 & 5, XFCE 4.10, LXDE, Openbox, MacOS X, and Windows 7, 8, and 10.
+rWall is a wallpaper management program for all major (and some minor) desktop environments
 
 ## Features ##
 
@@ -25,8 +25,8 @@ rWall mostly requires setup in Windows, KDE, and Openbox. KDE support requires s
 rWall requires Python 3.2+, feh, and one of the supported desktop environments (GNOME3, Cinnamon2, KDE 4.x, Xfce 4.10, or Openbox).  Image filtering requires Python3 Pillow and Tkinter libraries be installed, but not doing so won't break the script.  In Linux, rWall's only hard dependency is feh, if you are in Openbox or an undetected Linux environment.
 ### >> Debian/Ubuntu/Linux Mint: 
 `sudo apt-get install python3-pil python3-tk xclip feh`
-### >> Windows 7, 8, and 10: 
-Windows users must install Python 3.4 (not 3.5) and get the Pillow wheel from: http://www.lfd.uci.edu/~gohlke/pythonlibs/
+### >> Windows 7+: 
+Windows users must install Python 3 and get the Pillow wheel from: http://www.lfd.uci.edu/~gohlke/pythonlibs/
 Launch cmd.exe and run `pip install [name of Pillow file]` from Pillow's
 directory.
 ### >> Configuration: 
@@ -36,16 +36,11 @@ Just download and run the script.  Setup shortcuts for rwall.py, rwall.py -n, an
 
 ## Changelog ##
 
-v2.5 "Itchy"
+v3.6 "Blinky"
 
-* Last shell script version
-
-v3.0 "Scratchy"
-
-* First Python3 version.
-* Improved speed and image collection
-* Enhanced features, like slideshow
-* Next/Previous works in all environs now
+* optionally use newline-separated lists of image paths instead of directories
+* '--reshuffle': random selection from current image's directory and below
+* '--present': random selection from the present working directory, ignoring subdirectories 
 
 v3.5 "Akira"
 
@@ -56,8 +51,19 @@ v3.5 "Akira"
 * Improved error handling and bugfixes
 * Image filtering with Pillow
 
-### Contribution guidelines ###
+v3.0 "Scratchy"
 
-Contact me at rockhazardz@gmail.com
+* First Python3 version.
+* Improved speed and image collection
+* Enhanced features, like slideshow
+* Next/Previous works in all environs now
+
+v2.5 "Itchy"
+
+* Final shell script version
+
+### Contact ###
+
+Contact me at ike.davis.net@gmail.com
 
 ### [rockhazard home](https://rockhazard.github.io/index.html)

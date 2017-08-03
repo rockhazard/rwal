@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-
+"""
+Library for detecting the host environment then building and executing wallpaper
+commands
+"""
 import sys
 import os
 import subprocess
@@ -7,11 +10,11 @@ import ctypes
 from state import State
 
 
-class Env(State):
+class Environment(State):
     """ detect desktop environment and produce background command string"""
 
     def __init__(self):
-        super(Env, self).__init__()
+        super(Environment, self).__init__()
         self.pic = None
         self.desktopSession = os.environ['DESKTOP_SESSION']
         # desktop environment flags for diff implementations
@@ -43,27 +46,27 @@ class Env(State):
     DESKTOP ENVIRONMENT COMMANDS
     """
 
-    def get_mode(self, environment):
+    def get_mode(self, desktop):
         """check and apply user-defined mode format; use fallback if invalid"""
         gnomeMode = ('none', 'centered', 'scaled', 'spanned', 'stretched',
                      'wallpaper', 'zoom')
-        if environment == 'cinnamon':
+        if desktop == 'cinnamon':
             image_config = self.config.get(
                 'Wallpaper Modes', 'Cinnamon', fallback='scaled')
             mode = gnomeMode
-        elif environment == 'gnome':
+        elif desktop == 'gnome':
             image_config = self.config.get(
                 'Wallpaper Modes', 'GNOME', fallback='scaled')
             mode = gnomeMode
-        elif environment == 'mate':
+        elif desktop == 'mate':
             image_config = self.config.get(
                 'Wallpaper Modes', 'MATE', fallback='scaled')
             mode = gnomeMode
-        elif environment == 'xfce':
+        elif desktop == 'xfce':
             image_config = self.config.get(
                 'Wallpaper Modes', 'Xfce', fallback='4')
             mode = ('0', '1', '2', '3', '4', '5')
-        elif environment == 'lxde':
+        elif desktop == 'lxde':
             image_config = self.config.get(
                 'Wallpaper Modes', 'LXDE', fallback='scaled')
             mode = ('tiled', 'center', 'scaled', 'fit', 'stretch')
@@ -88,7 +91,7 @@ class Env(State):
             'gsettings set org.gnome.desktop.background picture-options\
             {};'.format(self._state['mode']) + \
             'gsettings set org.gnome.desktop.background picture-uri \
-            \'file://{}\''.format(self.pic)
+            \'file://{}\''.format(self.get_state('pic'))
         return gnome3
 
     def set_mate(self):
@@ -96,7 +99,7 @@ class Env(State):
         mate = \
             'gsettings set org.mate.background picture-options {0}; \
             gsettings set org.mate.background picture-filename \
-            \'{1}\''.format(self._state['mode'], self.pic)
+            \'{1}\''.format(self._state['mode'], self.get_state('pic'))
         return mate
 
     def set_kde(self):
@@ -104,7 +107,7 @@ class Env(State):
         kde = \
             'rm $(find {1} -type f \
             -iregex ".*\.\(jpg\|png\|jpeg\)$") 2> /dev/null ;\
-            cp {0} {1}/'.format(self.pic, self.configDirectory)
+            cp {0} {1}/'.format(self.get_state('pic'), self.configDirectory)
         return kde
 
     def set_xfce(self):
@@ -118,20 +121,21 @@ class Env(State):
                     -t string -s "" 2> /dev/null
                     xfconf-query -c xfce4-desktop -p $i -s "{0}" 2> /dev/null
                     xfconf-query -c xfce4-desktop -p $i -s "{1}" 2> /dev/null
-            done""".format(self._state['mode'], self.pic)
+            done""".format(self._state['mode'], self.get_state('pic'))
         return xfce
 
     def set_lxde(self):
         self.get_mode('lxde')
         lxde = 'pcmanfm --set-wallpaper \'{}\' \
-        --wallpaper-mode={}'.format(self.pic, self._state['mode'])
+        --wallpaper-mode={}'.format(self.get_state('pic'), self._state['mode'])
         return lxde
 
     def set_openbox(self):
         # Openbox and other *nix window managers
         if self.depends['feh'][1]:
             self.get_mode('openbox')
-            openbox = 'feh {} \'{}\''.format(self._state['mode'], self.pic)
+            openbox = 'feh {} \'{}\''.format(self._state['mode'],
+                                             self.get_state('pic'))
             return openbox
         else:
             print('Openbox and any undetected environs require feh.')
@@ -139,7 +143,8 @@ class Env(State):
     def set_windows(self):
         # Note: in Python3, strings passed to windll must be encoded as ascii
         windows = ctypes.windll.user32.SystemParametersInfoA(0x14, 0,
-                                                             self.pic.encode(
+                                                             self.get_state(
+                                                                 'pic').encode(
                                                                  'ascii'), 3)
         return windows
 
@@ -148,7 +153,7 @@ class Env(State):
         tell application "Finder"
         set desktop picture to POSIX file "{}"
         end tell
-        END""".format(self.pic)
+        END""".format(self.get_state('pic'))
         return applescript
 
     def set_background(self):
@@ -160,7 +165,9 @@ class Env(State):
 
 
 def main(argv):
-    pass
+    env = Environment()
+    env.set_state('pic', '{}/Pictures/image.jpg'.format(env.get_state('home')))
+    env.set_background()
 
 
 if __name__ == '__main__':
