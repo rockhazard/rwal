@@ -57,22 +57,22 @@ from arguments import build_args
 from slideshow import SlideShow
 
 __author__ = 'Ike Davis'
+config = Config()
+state = State()
+rimage = ImageCollector()
+renv = Environment()
+
+
+def set_background():
+    # acquire image based on user options then apply to background
+    renv.set_state('pic', rimage.select_image())
+    renv.set_background()
 
 
 def main(argv):
-    config = Config()
     config.set_config()
     config.set_bgconfig()
-    state = State()
-    rimage = ImageCollector()
-    renv = Environment()
-
-    def set_background():
-        # acquire image based on user options then apply to background
-        renv.set_state('pic', rimage.select_image())
-        renv.set_background()
-
-    args = build_args(renv.desktopSession)
+    args = build_args(renv.get_state('desktopSession'))
     state.set_state('verbose', args.verbose)
 
     if args.present:
