@@ -8,7 +8,7 @@ rWall is a wallpaper management program for all major (and some minor) desktop e
 
 ## Features ##
 
-* Auto-detects most environments, such as Windows and all common Linux desktop environments
+* Auto-detects most environments, such as Windows, OSX, and all common Linux desktop environments
 * Randomly selects images from one of five user-preset directories, in addition to the default directory.
 * Specify an image directory on the commandline.
 * In addition to random selection, the user can apply a manually selected image.
@@ -26,8 +26,8 @@ rWall requires Python 3.2+, feh, and one of the supported desktop environments (
 ### >> Debian/Ubuntu/Linux Mint: 
 `sudo apt-get install python3-pil python3-tk xclip feh`
 ### >> Windows 7+: 
-Windows users must install Python 3 and get the Pillow wheel from: http://www.lfd.uci.edu/~gohlke/pythonlibs/
-Launch cmd.exe and run `pip install [name of Pillow file]` from Pillow's
+Windows users must install Python 3 and get the Pillow wheel from: [wheels](http://www.lfd.uci.edu/~gohlke/pythonlibs/)
+Launch cmd.exe and run `pip install [name of Pillow file]` from the file's
 directory.
 ### >> Configuration: 
 rWall autoconfigures itself for the supported environments, for the most part.  A settings folder is created as `[home]/.config/rwall`.  Rwall.conf, background.conf, and images.txt files are created there. Use rwall.conf to set your image directories.
