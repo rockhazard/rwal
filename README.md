@@ -4,7 +4,7 @@ rWall Stable
 
 ### What is this repository for? ###
 
-rWall is a desktop wallpaper management application. It automatically detects the current user's environment then optionally selects a random ordered image from a directory or list.  The script applies that image as a background. It supports GNOME3 (Gnome Shell, Unity, Cinnamon, Mate), KDE4 & 5, XFCE 4.10, LXDE, Openbox, OSX, and Windows 7+.
+rWall is a desktop wallpaper management application. It automatically detects the current user's environment then randomly selects and applies an image from a directory or list to the user's desktop background.  It supports GNOME3 (Gnome Shell, Unity, Cinnamon, Mate), KDE4 & 5, XFCE 4.10, LXDE, Openbox, OSX, and Windows 7+.
 
 ### Features ###
 
