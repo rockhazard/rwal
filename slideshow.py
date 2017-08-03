@@ -15,7 +15,7 @@ class SlideShow(State):
         self.env = Environment()
 
     def start_slideshow(self, directory, delay, count, switch):
-        listExt = ('txt', 'list', 'db')
+        listExt = ('.txt', '.list')
 
         def slides_setup():
             if not self.get_state('list'):
