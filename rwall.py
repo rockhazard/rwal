@@ -34,7 +34,8 @@ TODO: ---
 OPTIONS: type rwall.py -h in a terminal
 REQUIREMENTS: Python3.2+, python3-pil, python3-tk, feh, xclip, and a supported
 desktop environment.
-BUGS: OSX innocuous error returned by Applescript
+BUGS: OSX innocuous error returned by Applescript, 'Duplicate Options' bug that
+      requires deletion of background.conf
 NOTES: Feh is used for Openbox and any unknown environment. KDE users must click
 Default Desktop Settings > Slideshow, apply "~/.config/rwall/kde-plasma", and
 may have to logout/login.

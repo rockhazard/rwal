@@ -70,11 +70,8 @@ class TestImages(unittest.TestCase):
 
     def test_get_pic_nomatch(self):
         selector = ImageSelector()
-        with self.assertRaises(SystemExit) as cm:
+        with self.assertRaises(ValueError) as cm:
             selector.get_pic('mock')
-        self.assertEqual(cm.exception.code,
-                         "ImageSelector received unknown action: value 'mock' "
-                         "of type <class 'str'>")
 
     """"Test ImageCollector"""""
 
