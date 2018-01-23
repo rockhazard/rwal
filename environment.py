@@ -16,7 +16,10 @@ class Environment(State):
     def __init__(self):
         super(Environment, self).__init__()
         self.pic = None
-        self.desktopSession = os.environ['DESKTOP_SESSION']
+        if 'APPDATA' in os.environ:
+            self.desktopSession = 'windows'
+        else:
+            self.desktopSession = os.environ['DESKTOP_SESSION']
         # desktop environment flags for diff implementations
         self.gnomeEnv = ('cinnamon', 'gnome', 'ubuntu', 'unity')
         self.kdeEnv = ('kde-plasma', 'plasma', '/usr/share/xsessions/plasma')
