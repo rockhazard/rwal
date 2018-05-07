@@ -135,4 +135,7 @@ def main(argv):
 
 
 if __name__ == '__main__':
+    # profiling test
+    # import cProfile
+    # cProfile.run("sys.exit(main(sys.argv[1:]))")
     sys.exit(main(sys.argv[1:]))

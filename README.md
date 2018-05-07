@@ -2,7 +2,7 @@
 
 rWall Stable
 
-### What is this repository for? ###
+### What is rWall? ###
 
 rWall is a desktop wallpaper management application. It automatically detects the current user's environment then randomly selects and applies an image from a directory or list to the user's desktop background.  It supports GNOME3 (Gnome Shell, Unity, Cinnamon, Mate), KDE4 & 5, XFCE 4.10, LXDE, Openbox, OSX, and Windows 7+.
 
@@ -21,25 +21,51 @@ rWall is a desktop wallpaper management application. It automatically detects th
 
 ### How do I get set up? ###
 
-rWall mostly requires setup in Windows, KDE, and Openbox. KDE support requires some trivial setup via "Default Desktop Settings". Using the slideshow option, set "Change images every" to lowest, and select ~/.config/rwall/kde/mon1, then apply settings.  Openbox requires the installation of feh and the application of feh's background settings in autostart.sh.
+* __GNOME and Xfce:__
+These environments d not require any setup, but see _rwall.conf_ for customizations.
 
-* Dependencies:
-rWall requires Python 3.2+, feh, and one of the supported desktop environments (GNOME3, Cinnamon2, KDE 4.x, Xfce 4.10, or Openbox).  Image filtering requires Python3 Pillow and Tkinter libraries be installed, but not doing so won't break the script.  In Linux, rWall's only hard dependency is feh, if you are in Openbox or an undetected Linux environment.
+* __KDE:__
+Setup via "Default Desktop Settings". Using the slideshow option, set "Change images every" to lowest, and select ~/.config/rwall/kde/mon1, then apply settings.  
 
-* Debian/Ubuntu/Linux Mint:
-`sudo apt-get install python3-pil python3-tk xclip feh`
+* __Openbox:__
+Install feh and apply feh's background settings in _autostart.sh_.
 
-* Windows 7+:
+* __Windows 7+:__
 In order to use the image filtering feature, Windows users must install Python 3 and get the Pillow wheel from:
 http://www.lfd.uci.edu/~gohlke/pythonlibs/
 Launch cmd.exe and run `pip install [name of Pillow file]` from Pillow's
 directory.
 
-* Configuration:
-rWall autoconfigures itself for the supported environments, for the most part.  A settings folder is created as `[user_home]/.config/rwall`.  Rwall.conf, background.conf, and images.txt files are created there. Use rwall.conf to set your image directories and default config editor.
+#### Dependencies:
 
-* Deployment instructions:
-Just download and run the script.  Setup shortcuts for rwall.py, rwall.py -n, and rwall.py -p to turn your background into a rapid photo album experience.
+* Python 3.2+
+* Python 3 Pillow and Tkinter
+* feh (required for Openbox and other windows managers)
+* xclip
+* A supported environment (GNOME3, Cinnamon2x, KDE, Xfce, Openbox, Windows 7+, or MacOSX)
+
+_Debian/Ubuntu/Linux Mint notes:_
+`sudo apt-get install python3-pil python3-tk xclip feh`
+
+#### Configuration:
+On first run, rWall does _not_ set a wallpaper. Instead, a configuration folder is created as `[user]/.config/rwall`.  Rwall.conf, background.conf, and images.txt files are created there. Use rwall.conf to set your image directories and default config editor. Otherwise, rWall will use [user]/Pictures by default on its next execution.
+
+#### Examples:
+* To use the default image directory
+`rwall.py`
+
+* To specify a directory at the commandline
+`rwall.py -d /path/to/directory`
+
+* To specify the first of five predefined directoies
+`rwall.py -1`
+
+* To use a list of newline-separated image paths
+`rwall.py -l /path/to/image/list`
+
+* To specify a particular image
+`rwall.py -i /path/to/image`
+
 
 ### Changelog ###
 
@@ -47,7 +73,7 @@ v3.6 "Blinky"
 
 * optionally use newline-separated lists of image paths instead of directories
 * '--reshuffle': random selection from current image's directory and below
-* '--present': random selection from the present working directory, ignoring subdirectories 
+* '--present': random selection from the present working directory, ignoring subdirectories
 
 v3.5 "Akira"
 

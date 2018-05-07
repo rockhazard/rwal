@@ -67,7 +67,7 @@ class ImageCollector(State):
             for line in rawList:
                 if line.endswith(extensions):
                     self.sourceImages.append(line)
-        elif self._state['pwd']:  # do no search subdirectories
+        elif self._state['pwd']:  # do not search subdirectories
             for file in Path(self.imageDirectory).iterdir():
                 candidate = str(file)
                 if candidate.endswith(extensions):

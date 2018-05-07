@@ -12,10 +12,11 @@ def build_args(desktop):
         prog=str(Path(sys.argv[0]).name),
         description=dedent("""\
         DESCRIPTION:
-        rWall randomizes your desktop background image in GNOME3, Cinnamon,
-        MATE, KDE 4 & 5, Xfce, Openbox, LXDE, Mac OS X, and Windows 7 and newer;
-        if none of these environments are detected, then rWall attempts
-        to use feh to set your background.
+        rWall is a wallpaper manager. It's primary feature is to apply a 
+        randomly chosen image as a wallpaper from a collection within selected
+        directories. rWall works with GNOME3, Cinnamon, MATE, KDE 4 & 5, Xfce, 
+        Openbox, LXDE, MacOSX, and Windows 7+. If none of these environments are
+        detected, rWall attempts to use an image viewer (feh) to set the image.
     
         SETUP:
         Choose various background image source directories, then edit rwall.conf
