@@ -4,7 +4,10 @@ rWall Stable
 
 ### What is rWall? ###
 
-rWall is a desktop wallpaper management application. It automatically detects the current user's environment then randomly selects and applies an image from a directory or list to the user's desktop background.  It supports GNOME3 (Gnome Shell, Unity, Cinnamon, Mate), KDE4 & 5, XFCE 4.10, LXDE, Openbox, OSX, and Windows 7+.
+rWall is a cross-platform desktop wallpaper manager. It automatically detects the current user's environment then randomly selects and applies an image from a directory or list to the user's desktop background.  It supports GNOME3 (Gnome Shell, Unity, Cinnamon, Mate), KDE4 & 5, XFCE 4.10, LXDE, Openbox, OSX, and Windows 7+.
+
+### Why?
+rWall is designed to turn your background into a kind of flipbook. It's particularly for those who have _huge_ image collections but haven't seen some images in a long time due to the size of those collections and the time required to browse them. rWall may delight users with images they'd forgotten they ever had.
 
 ### Features ###
 
@@ -61,10 +64,13 @@ On first run, rWall does _not_ set a wallpaper. Instead, a configuration folder 
 `rwall.py -1`
 
 * To use a list of newline-separated image paths
-`rwall.py -l /path/to/image/list`
+`rwall.py -l /path/to/image/list.txt`
 
-* To specify a particular image
-`rwall.py -i /path/to/image`
+* To advance to the next image in a directory or list
+`rwall.py -n`
+
+* For more help
+`rwall.py -h`
 
 
 ### Changelog ###
