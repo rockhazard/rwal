@@ -53,7 +53,7 @@ class State:
                          'directory5', '1', '2', '3', '4', '5')
 
         # desktop environment flags for diff implementations
-        self.gnomeEnv = ('cinnamon', 'gnome', 'ubuntu', 'unity')
+        self.gnomeEnv = ('cinnamon', 'gnome', 'ubuntu', 'unity', 'deepin')
         self.kdeEnv = ('kde-plasma', 'plasma', '/usr/share/xsessions/plasma')
 
         # configuration files
