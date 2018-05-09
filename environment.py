@@ -21,7 +21,7 @@ class Environment(State):
         else:
             self.desktopSession = os.environ['DESKTOP_SESSION']
         # desktop environment flags for diff implementations
-        self.gnomeEnv = ('cinnamon', 'gnome', 'ubuntu', 'unity')
+        self.gnomeEnv = ('cinnamon', 'gnome', 'ubuntu', 'unity', 'deepin')
         self.kdeEnv = ('kde-plasma', 'plasma', '/usr/share/xsessions/plasma')
 
     def set_desktop(self):
