@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Module for collecting and selecting images from various sources"""
 import sys, os, random, imghdr, subprocess
-from PIL import Image
 from textwrap import dedent
 import tkinter as tk
 from fractions import Fraction
 from pathlib import Path
+from PIL import Image
 from state import State
 
 

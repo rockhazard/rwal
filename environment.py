@@ -28,7 +28,7 @@ class Environment(State):
         """detect desktop environment to set appropriate desktop function"""
         if self.desktopSession in self.gnomeEnv:
             return self.set_gnome3()
-        elif self.desktopSession in self.kdeEnv:
+        elif 'plasma' in self.desktopSession:
             return self.set_kde()
         elif self.desktopSession == 'LXDE':
             return self.set_lxde()
