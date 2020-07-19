@@ -37,15 +37,15 @@ desktop environment.
 BUGS: OSX innocuous error returned by Applescript, 'Duplicate Options' bug that
       requires deletion of background.conf
 NOTES: Feh is used for Openbox and any unknown environment. KDE users must click
-Default Desktop Settings > Slideshow, apply "~/.config/rwall/kde-plasma", and
+Default Desktop Settings > Slideshow, apply "~/.config/rwal/kde-plasma", and
 may have to logout/login.
 AUTHOR: Ike Davis, ike.davis.net@gmail.com
 ACKNOWLEDGMENTS: xfconf shell string: Peter Levi (please go check out Variety!
 http://peterlevi.com/variety/)
 COMPANY: ---
-VERSION: rwal 3.5q "Akira", by rockhazard (c)2016
+VERSION: rwal 3.5q "Akira", by Ike Davis (c)2020
 CREATED: 09/13/2015
-REVISION: 07/27/2017
+REVISION: 07/19/2020
 LICENSE: GPL 3.0, no warranty expressed or implied
 """
 import sys

@@ -1,10 +1,11 @@
 # README #
 
-rwal Stable
+rwal
 
-### What is rWall? ###
+### What is rwal? ###
 
-rwal is a cross-platform desktop wallpaper manager. It automatically detects the current user's environment then randomly selects and applies an image from a directory or list to the user's desktop background.  It supports GNOME3 (Gnome Shell, Unity, Cinnamon, Mate), KDE4 & 5, XFCE 4.10, LXDE, Openbox, OSX, and Windows 7+.
+rwal is a cross-platform desktop wallpaper manager. It automatically detects the current user's environment then randomly selects and applies an image from a directory or list to the user's desktop background.  It supports GNOME3 (Gnome Shell, Unity, Cinnamon, Mate), KDE4 & 5, XFCE 4.10, LXDE, Openbox, OSX, and Windows 7+. It has been confirmed to work on many window managers as well, such
+as i3 and Qtile, using feh.
 
 ### Why?
 rwal is designed to turn your background into a kind of flipbook. It's particularly for those who have _huge_ image collections but haven't seen some images in a long time due to the size of those collections and the time required to browse them. rwal may delight users with images they'd forgotten they ever had.
@@ -25,10 +26,10 @@ rwal is designed to turn your background into a kind of flipbook. It's particula
 ### How do I get set up? ###
 
 * __GNOME and Xfce:__
-These environments d not require any setup, but see _rwall.conf_ for customizations.
+These environments do not require any setup, but see _rwal.conf_ for customizations.
 
 * __KDE:__
-Setup via "Default Desktop Settings". Using the slideshow option, set "Change images every" to lowest, and select ~/.config/rwall/kde/mon1, then apply settings.  
+Setup via "Default Desktop Settings". Using the slideshow option, set "Change images every" to lowest, and select ~/.config/rwal/kde/mon1, then apply settings.  
 
 * __Openbox:__
 Install feh and apply feh's background settings in _autostart.sh_.
@@ -37,21 +38,25 @@ Install feh and apply feh's background settings in _autostart.sh_.
 In order to use the image filtering feature, Windows users must install Python 3 and get the Pillow wheel from:
 http://www.lfd.uci.edu/~gohlke/pythonlibs/
 Launch cmd.exe and run `pip install [name of Pillow file]` from Pillow's
-directory.
+directory. It is recommended to use rwal in conjunction with a keybinding program,
+such as AutoHotkey.
 
 #### Dependencies:
 
+**when running from source**
 * Python 3.2+
 * Python 3 Pillow and Tkinter
+
+**source and binary**
 * feh (required for Openbox and other windows managers)
-* xclip
+* xclip (for automatically copying wallpaper path to clipboard)
 * A supported environment (GNOME3, Cinnamon2x, KDE, Xfce, Openbox, Windows 7+, or MacOSX)
 
 _Debian/Ubuntu/Linux Mint notes:_
 `sudo apt-get install python3-pil python3-tk xclip feh`
 
 #### Configuration:
-On first run, rwal does _not_ set a wallpaper. Instead, a configuration folder is created as `[user]/.config/rwall`.  Rwall.conf, background.conf, and images.txt files are created there. Use rwall.conf to set your image directories and default config editor. Otherwise, rwal will use [user]/Pictures by default on its next execution.
+On first run, rwal does _not_ set a wallpaper. Instead, a configuration folder is created as `[user]/.config/rwal/[env]`.  rwal.conf, background.conf, and images.txt files are created there. Use rwal.conf to set your image directories and default config editor. Otherwise, rwal will use [user]/Pictures by default on its next execution.
 
 #### Examples:
 * To use the default image directory
@@ -64,7 +69,7 @@ On first run, rwal does _not_ set a wallpaper. Instead, a configuration folder i
 `rwal.py -1`
 
 * To use a list of newline-separated image paths
-`rwal.py -l /path/to/image/list.txt`
+`rwal.py -l /path/to/images/list.txt`
 
 * To advance to the next image in a directory or list
 `rwal.py -n`
@@ -75,14 +80,11 @@ On first run, rwal does _not_ set a wallpaper. Instead, a configuration folder i
 
 ### Changelog ###
 
-v3.6 "Blinky"
-
-* optionally use newline-separated lists of image paths instead of directories
-* '--reshuffle': random selection from current image's directory and below
-* '--present': random selection from the present working directory, ignoring subdirectories
-
 v3.5 "Akira"
 
+* '--reshuffle': random selection from current image's directory and below
+* '--present': random selection from the present working directory, ignoring subdirectories
+* optionally use newline-separated lists of image paths instead of directories
 * Config file
 * Windows 7 function
 * Addition of LXDE and KDE5 functions
@@ -103,4 +105,4 @@ v2.5 "Itchy"
 
 ### Contact ###
 
-ike.davis.net@gmail.com
+rockhazardz@gmail.com

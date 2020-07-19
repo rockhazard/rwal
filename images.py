@@ -65,7 +65,7 @@ class ImageCollector(State):
     def get_source_images(self):
         """create list of images from given directory or images list file"""
         # list files recursively, or only in target directory
-        extensions = ('.jpg', '.jpeg', '.png', '.bmp')
+        extensions = ('.jpg', '.jpeg', '.png', '.bmp', '.gif', '.tiff')
         if self._state['list']:  # grab from user-provided list
             rawList = self.get_imagesList()
             for line in rawList:
@@ -218,6 +218,8 @@ class ImageCollector(State):
             else:
                 self.skip_image()
         except FileNotFoundError:
+            self.skip_image()
+        except TypeError:
             self.skip_image()
 
         # used with get_record_background() and edit_background()

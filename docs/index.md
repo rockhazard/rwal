@@ -25,10 +25,10 @@ rwal is designed to turn your background into a kind of flipbook. It's particula
 ### How do I get set up? ###
 
 * __GNOME and Xfce:__
-These environments d not require any setup, but see _rwall.conf_ for customizations.
+These environments d not require any setup, but see _rwal.conf_ for customizations.
 
 * __KDE:__
-Setup via "Default Desktop Settings". Using the slideshow option, set "Change images every" to lowest, and select ~/.config/rwall/kde/mon1, then apply settings.  
+Setup via "Default Desktop Settings". Using the slideshow option, set "Change images every" to lowest, and select ~/.config/rwal/kde/mon1, then apply settings.  
 
 * __Openbox:__
 Install feh and apply feh's background settings in _autostart.sh_.
@@ -51,7 +51,7 @@ _Debian/Ubuntu/Linux Mint notes:_
 `sudo apt-get install python3-pil python3-tk xclip feh`
 
 #### Configuration:
-On first run, rwal does _not_ set a wallpaper. Instead, a configuration folder is created as `[user]/.config/rwall`.  Rwall.conf, background.conf, and images.txt files are created there. Use rwall.conf to set your image directories and default config editor. Otherwise, rwal will use [user]/Pictures by default on its next execution.
+On first run, rwal does _not_ set a wallpaper. Instead, a configuration folder is created as `[user]/.config/rwal`.  rwal.conf, background.conf, and images.txt files are created there. Use rwal.conf to set your image directories and default config editor. Otherwise, rwal will use [user]/Pictures by default on its next execution.
 
 #### Examples:
 * To use the default image directory

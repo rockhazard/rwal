@@ -19,10 +19,10 @@ def build_args(desktop):
         detected, rwal attempts to use an image viewer (feh) to set the image.
     
         SETUP:
-        Choose various background image source directories, then edit rwall.conf
-        in "~/.config/rwall/{}" accordingly. You may
+        Choose various background image source directories, then edit rwal.conf
+        in "~/.config/rwal/{}" accordingly. You may
         use "%(prog)s -c" to edit this file, if you like. For KDE usage
-        set KDE's desktop slideshow feature to "~/.config/rwall/kde-plasma".
+        set KDE's desktop slideshow feature to "~/.config/rwal/kde-plasma".
         rwal requires feh for Openbox and unidentified desktop environs.  See
         your desktop environment's documentation for help setting up feh.
         """.format(desktop)), epilog=dedent("""\
@@ -89,7 +89,7 @@ def build_args(desktop):
         COUNT of 0 sets COUNT to number of images in given directory. SWITCH
         is either "random" or "alpha", and describes the order of the loop.
         DIRECTORY can also be 1 through 5, or directory1 through directory5.
-        These are mapped to your preset directories in rwall.conf.""",
+        These are mapped to your preset directories in rwal.conf.""",
                         nargs=4,
                         metavar=('DIRECTORY', 'DELAY', 'COUNT', 'SWITCH'))
     parser.add_argument('-b', '--printbackground',

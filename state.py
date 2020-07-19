@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-A singleton inherited by the other classes in rWall
+A singleton inherited by the other classes in rwal
 """
 import os, configparser
 from pathlib import Path
@@ -21,7 +21,7 @@ class State:
         mode=False,
         mode_error=dedent("""\
             WARNING: configuration fault detected
-            check modes in rwall.conf
+            check modes in rwal.conf
             fallback mode applied""")
     )
 
@@ -60,13 +60,13 @@ class State:
         self.desktopSession = os.environ.get('DESKTOP_SESSION')
         if self.desktopSession in self.kdeEnv:
             self.configDirectory = str(Path(self._state['home'],
-                                            '.config/rwall/kde-plasma/'))
+                                            '.config/rwal/kde-plasma/'))
         else:
             self.configDirectory = str(Path(self._state['home'],
-                                            '.config/rwall/{}'.format(
+                                            '.config/rwal/{}'.format(
                                                 self.desktopSession)))
         self.configFile = Path(self._state['home'], self.configDirectory,
-                               'rwall.conf')
+                               'rwal.conf')
         self.bgFile = Path(self._state['home'], self.configDirectory,
                            'background.conf')
         # configuration file parser

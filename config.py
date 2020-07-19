@@ -26,14 +26,14 @@ class Config(State):
 
         # check for existence of config file, create if absent
         if not self.configFile.is_file():
-            self.config.add_section('rwal Configuration')
-            self.config.set('rwal Configuration',
+            self.config.add_section('Rwal Configuration')
+            self.config.set('Rwal Configuration',
                             dedent("""\
-            # Please modify this file to change rWall\'s behavior.
+            # Please modify this file to change rwal\'s behavior.
             # If you make a mistake, a clue will print to the terminal.
             # If all else fails just delete this file and run rwal.py.
             # A fresh working default config file will be created for you.
-            # Thanks for using rWall. Have fun!"""))
+            # Thanks for using rwal. Have fun!"""))
 
             # default settings
             self.config.add_section('Defaults')
@@ -138,5 +138,5 @@ class Config(State):
         self.set_config()
         edit_conf = self.config.get('Defaults', 'Default Config Editor')
         return subprocess.run(
-            '{} {}/rwall.conf'.format(edit_conf, self.configDirectory),
+            '{} {}/rwal.conf'.format(edit_conf, self.configDirectory),
             shell=True)
