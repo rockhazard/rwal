@@ -172,7 +172,7 @@ class ImageCollector(State):
                 imagesSet = set(images.read().splitlines())
                 self.imagesList = sorted(list(imagesSet))
         except FileNotFoundError:
-            sys.exit(dedent('No images file. Point rwall.py at a '
+            sys.exit(dedent('No images file. Point rwal.py at a '
                             'directory containing images using -d.'))
         return self.imagesList
 
@@ -195,7 +195,7 @@ class ImageCollector(State):
     def skip_image(self):
         selector = ImageSelector()
         self.index_background()
-        print('rWall skipped:\n{}\nIt is a corrupted or missing file.\
+        print('rwal skipped:\n{}\nIt is a corrupted or missing file.\
               '.format(self.get_index_background()))
         if self._state['image_action'] == 'next':
             self.selectedImage = selector.get_pic('next')
@@ -238,10 +238,10 @@ class ImageCollector(State):
         # if in windows, don't use xclip; if in MacOS us pbcopy
         if 'APPDATA' not in os.environ:
             if self.depends['xclip'][1]:
-                subprocess.call('echo -n "{}" | \
+                subprocess.run('echo -n "{}" | \
                      xclip -selection clipboard'.format(applied_bg), shell=True)
         elif 'Apple_PubSub_Socket_Render' in os.environ:
-            subprocess.call(
+            subprocess.run(
                 'echo -n {} | pbcopy'.format(applied_bg), shell=True)
         return applied_bg
 
@@ -249,13 +249,13 @@ class ImageCollector(State):
         self.read_config()
         applied_bg = self.get_record_background()
         edit_bg = self.config.get('Defaults', 'Default Background Editor')
-        return subprocess.call('{} \'{}\''.format(edit_bg, applied_bg),
+        return subprocess.run('{} \'{}\''.format(edit_bg, applied_bg),
                                shell=True)
 
 
 class ImageSelector(State):
     """"add image selection methods here then add corresponding string values to
-     _state['image_action'] in get_pic method, arguments.py, and rwall.py"""
+     _state['image_action'] in get_pic method, arguments.py, and rwal.py"""
 
     def __init__(self):
         super(ImageSelector, self).__init__()

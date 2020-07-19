@@ -164,7 +164,7 @@ class Environment(State):
         if 'APPDATA' in os.environ:
             return self.set_desktop()
         else:
-            return subprocess.call(self.set_desktop(), shell=True)
+            return subprocess.run(self.set_desktop(), shell=True)
 
 
 def main(argv):

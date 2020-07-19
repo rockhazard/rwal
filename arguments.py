@@ -12,28 +12,28 @@ def build_args(desktop):
         prog=str(Path(sys.argv[0]).name),
         description=dedent("""\
         DESCRIPTION:
-        rWall is a wallpaper manager. It's primary feature is to apply a 
+        rwal is a wallpaper manager. It's primary feature is to apply a 
         randomly chosen image as a wallpaper from a collection within selected
-        directories. rWall works with GNOME3, Cinnamon, MATE, KDE 4 & 5, Xfce, 
+        directories. rwal works with GNOME3, Cinnamon, MATE, KDE 4 & 5, Xfce, 
         Openbox, LXDE, MacOSX, and Windows 7+. If none of these environments are
-        detected, rWall attempts to use an image viewer (feh) to set the image.
+        detected, rwal attempts to use an image viewer (feh) to set the image.
     
         SETUP:
         Choose various background image source directories, then edit rwall.conf
         in "~/.config/rwall/{}" accordingly. You may
         use "%(prog)s -c" to edit this file, if you like. For KDE usage
         set KDE's desktop slideshow feature to "~/.config/rwall/kde-plasma".
-        rWall requires feh for Openbox and unidentified desktop environs.  See
+        rwal requires feh for Openbox and unidentified desktop environs.  See
         your desktop environment's documentation for help setting up feh.
         """.format(desktop)), epilog=dedent("""\
-        rWall is developed by rockhazard and licensed under GPL3.0. There are no
+        rwal is developed by rockhazard and licensed under GPL3.0. There are no
         warranties expressed or implied.
         """))
     parser.add_argument('--version', help='print version info then exit',
-                        version='rWall 3.5q "Akira", GPL3.0 (c) 2016, by rockhazard',
+                        version='rwal 3.5q "Akira", GPL3.0 (c) 2016, by rockhazard',
                         action='version')
     parser.add_argument('-v', '--verbose',
-                        help='print detailed feedback on rWall functions',
+                        help='print detailed feedback on rwal functions',
                         action='store_true')
     parser.add_argument('-c', '--config',
                         help='edit the configuration file, set initially to the user\'s \

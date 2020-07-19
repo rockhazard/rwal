@@ -79,16 +79,16 @@ class SlideShow(State):
                         '.format(count, time_remaining, current_dir),
                           '\nPress Ctrl-C to cancel.')
                 else:
-                    print('rWall Slideshow\nPress Ctrl-C to cancel.')
+                    print('rwal Slideshow\nPress Ctrl-C to cancel.')
             else:
                 self.clear_screen('reset')
-                print('rWall slideshow has ended.')
+                print('rwal slideshow has ended.')
         except KeyboardInterrupt:
             self.clear_screen('reset')
             sys.exit('Slideshow terminated by user...')
 
     def clear_screen(self, com='clear'):
         if 'APPDATA' not in os.environ:
-            subprocess.call(com, shell=True)
+            subprocess.run(com, shell=True)
         else:
-            subprocess.call('cls', shell=True)
+            subprocess.run('cls', shell=True)

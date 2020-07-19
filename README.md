@@ -1,13 +1,13 @@
 # README #
 
-rWall Stable
+rwal Stable
 
 ### What is rWall? ###
 
-rWall is a cross-platform desktop wallpaper manager. It automatically detects the current user's environment then randomly selects and applies an image from a directory or list to the user's desktop background.  It supports GNOME3 (Gnome Shell, Unity, Cinnamon, Mate), KDE4 & 5, XFCE 4.10, LXDE, Openbox, OSX, and Windows 7+.
+rwal is a cross-platform desktop wallpaper manager. It automatically detects the current user's environment then randomly selects and applies an image from a directory or list to the user's desktop background.  It supports GNOME3 (Gnome Shell, Unity, Cinnamon, Mate), KDE4 & 5, XFCE 4.10, LXDE, Openbox, OSX, and Windows 7+.
 
 ### Why?
-rWall is designed to turn your background into a kind of flipbook. It's particularly for those who have _huge_ image collections but haven't seen some images in a long time due to the size of those collections and the time required to browse them. rWall may delight users with images they'd forgotten they ever had.
+rwal is designed to turn your background into a kind of flipbook. It's particularly for those who have _huge_ image collections but haven't seen some images in a long time due to the size of those collections and the time required to browse them. rwal may delight users with images they'd forgotten they ever had.
 
 ### Features ###
 
@@ -20,7 +20,7 @@ rWall is designed to turn your background into a kind of flipbook. It's particul
 * A slideshow, using either random or alphabetical settings.
 * Filter images by the aspect ratio of your screen (or choose from a number of manual alternatives), so you never have to see a background that doesn't fit again.
 * Edit the current background with a quick command.
-* Lightweight and highly scriptable, rWall is designed to be used with shortcuts and other programs, in addition toe being tiny and highly portable.
+* Lightweight and highly scriptable, rwal is designed to be used with shortcuts and other programs, in addition toe being tiny and highly portable.
 
 ### How do I get set up? ###
 
@@ -51,26 +51,26 @@ _Debian/Ubuntu/Linux Mint notes:_
 `sudo apt-get install python3-pil python3-tk xclip feh`
 
 #### Configuration:
-On first run, rWall does _not_ set a wallpaper. Instead, a configuration folder is created as `[user]/.config/rwall`.  Rwall.conf, background.conf, and images.txt files are created there. Use rwall.conf to set your image directories and default config editor. Otherwise, rWall will use [user]/Pictures by default on its next execution.
+On first run, rwal does _not_ set a wallpaper. Instead, a configuration folder is created as `[user]/.config/rwall`.  Rwall.conf, background.conf, and images.txt files are created there. Use rwall.conf to set your image directories and default config editor. Otherwise, rwal will use [user]/Pictures by default on its next execution.
 
 #### Examples:
 * To use the default image directory
-`rwall.py`
+`rwal.py`
 
 * To specify a directory at the commandline
-`rwall.py -d /path/to/directory`
+`rwal.py -d /path/to/directory`
 
 * To specify the first of five predefined directoies
-`rwall.py -1`
+`rwal.py -1`
 
 * To use a list of newline-separated image paths
-`rwall.py -l /path/to/image/list.txt`
+`rwal.py -l /path/to/image/list.txt`
 
 * To advance to the next image in a directory or list
-`rwall.py -n`
+`rwal.py -n`
 
 * For more help
-`rwall.py -h`
+`rwal.py -h`
 
 
 ### Changelog ###

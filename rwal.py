@@ -2,17 +2,17 @@
 
 
 """
-FILE: rwall.py
+FILE: rwal.py
 
 DISCLAIMER: Distributed under GPL3.0. There is NO warranty expressed or implied.
 
-USAGE: rwall.py -h
+USAGE: rwal.py -h
 
-DESCRIPTION: rWall randomizes backgrounds in GNOME 3 (GNOME Shell, Cinnamon,
+DESCRIPTION: rwal randomizes backgrounds in GNOME 3 (GNOME Shell, Cinnamon,
 Unity, MATE), KDE, Xfce, LXDE, Openbox, Mac OS X, and Windows 7+.
 
-rWall is useful for folks with large image libraries. If you haven't seen some
-of your favorite images in a while, rWall will be a treat! Your background will
+rwal is useful for folks with large image libraries. If you haven't seen some
+of your favorite images in a while, rwal will be a treat! Your background will
 become a random or ordered flipbook or slideshow. Set the program file as
 executable and assign the various options to keyboard shortcuts.
 
@@ -28,10 +28,10 @@ FEATURES:
 * filter images by standard aspect ratios or by the aspect ratio of the current
   display's aspect ratio.
 * produces a separate profile for each desktop environment on a system, allowing
-  rWall to remember your wallpaper preferences on a per-environment basis
+  rwal to remember your wallpaper preferences on a per-environment basis
 
 TODO: ---
-OPTIONS: type rwall.py -h in a terminal
+OPTIONS: type rwal.py -h in a terminal
 REQUIREMENTS: Python3.2+, python3-pil, python3-tk, feh, xclip, and a supported
 desktop environment.
 BUGS: OSX innocuous error returned by Applescript, 'Duplicate Options' bug that
@@ -43,7 +43,7 @@ AUTHOR: Ike Davis, ike.davis.net@gmail.com
 ACKNOWLEDGMENTS: xfconf shell string: Peter Levi (please go check out Variety!
 http://peterlevi.com/variety/)
 COMPANY: ---
-VERSION: rWall 3.5q "Akira", by rockhazard (c)2016
+VERSION: rwal 3.5q "Akira", by rockhazard (c)2016
 CREATED: 09/13/2015
 REVISION: 07/27/2017
 LICENSE: GPL 3.0, no warranty expressed or implied

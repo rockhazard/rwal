@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Module for writing and reading the rWall configuration files"""
+"""Module for writing and reading the rwal configuration files"""
 import os, sys, subprocess
 from state import State
 from pathlib import Path
@@ -26,12 +26,12 @@ class Config(State):
 
         # check for existence of config file, create if absent
         if not self.configFile.is_file():
-            self.config.add_section('rWall Configuration')
-            self.config.set('rWall Configuration',
+            self.config.add_section('rwal Configuration')
+            self.config.set('rwal Configuration',
                             dedent("""\
             # Please modify this file to change rWall\'s behavior.
             # If you make a mistake, a clue will print to the terminal.
-            # If all else fails just delete this file and run rwall.py.
+            # If all else fails just delete this file and run rwal.py.
             # A fresh working default config file will be created for you.
             # Thanks for using rWall. Have fun!"""))
 
@@ -101,12 +101,12 @@ class Config(State):
                 self.config.write(configfile)
 
             print('Default configuration initialized.')
-            print('Configuration file: {}\nuse rwall.py -c to edit file\
+            print('Configuration file: {}\nuse rwal.py -c to edit file\
                 '.format(str(self.configFile)))
             print('Default image directory is set to {}'.format(default))
             sys.exit(dedent("""\
-                Please run rwall.py again to select and apply a background.
-                If you need help, type rwall.py -h in a terminal."""))
+                Please run rwal.py again to select and apply a background.
+                If you need help, type rwal.py -h in a terminal."""))
         else:
             # open config file for reading if it already exists
             self.config.read(str(self.configFile))
@@ -137,6 +137,6 @@ class Config(State):
     def edit_config(self):
         self.set_config()
         edit_conf = self.config.get('Defaults', 'Default Config Editor')
-        return subprocess.call(
+        return subprocess.run(
             '{} {}/rwall.conf'.format(edit_conf, self.configDirectory),
             shell=True)
