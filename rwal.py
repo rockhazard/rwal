@@ -2,17 +2,17 @@
 
 
 """
-FILE: rwall.py
+FILE: rwal.py
 
 DISCLAIMER: Distributed under GPL3.0. There is NO warranty expressed or implied.
 
-USAGE: rwall.py -h
+USAGE: rwal.py -h
 
-DESCRIPTION: rWall randomizes backgrounds in GNOME 3 (GNOME Shell, Cinnamon,
+DESCRIPTION: rwal randomizes backgrounds in GNOME 3 (GNOME Shell, Cinnamon,
 Unity, MATE), KDE, Xfce, LXDE, Openbox, Mac OS X, and Windows 7 through 10.
 
-rWall is useful for folks with large image libraries. If you haven't seen some
-of your favorite images in a while, rWall will be a treat! Your background will
+rwal is useful for folks with large image libraries. If you haven't seen some
+of your favorite images in a while, rwal will be a treat! Your background will
 become a random or ordered flipbook or slideshow. Set the program file as
 executable and assign the various options to keyboard shortcuts.
 
@@ -28,10 +28,10 @@ FEATURES:
 * filter images by standard aspect ratios or by the aspect ratio of the current
   display's aspect ratio.
 * produces a separate profile for each desktop environment on a system, allowing
-  rWall to remember your wallpaper preferences on a per-environment basis
+  rwal to remember your wallpaper preferences on a per-environment basis
 
 TODO: explore OSX functionality
-OPTIONS: type rwall.py -h in a terminal
+OPTIONS: type rwal.py -h in a terminal
 REQUIREMENTS: Python3.2+, python3-pil, python3-tk, feh, xclip, and a supported
 desktop environment.
 BUGS: ---
@@ -42,18 +42,24 @@ AUTHOR: rockhazard, rockhazardz@gmail.com
 ACKNOLEDGMENTS: xfconf shell string: Peter Levi (please go check out Variety!
 http://peterlevi.com/variety/)
 COMPANY: ---
-VERSION: rWall 3.5q "Akira", by rockhazard (c)2016
+VERSION: rwal 3.5q "Akira", by rockhazard (c)2016
 CREATED: 09/13/2015
 REVISION: 07/14/2016
 LICENSE: GPL 3.0, no warranty expressed or implied
 """
 
 __author__ = 'rockhazard'
-import os, random, sys, imghdr, time, configparser, argparse, textwrap
-import ctypes
+import os
+import random
+import sys
+import imghdr
+import time
+import configparser
+import argparse
+from textwrap import dedent
 from pathlib import Path
 from fractions import Fraction
-from subprocess import call
+from subprocess import run
 
 # doing in-script dependency checks, because absence of packages will reduce
 # functionality but not break the script, therefore warn user, but proceed
@@ -78,10 +84,13 @@ if 'APPDATA' not in os.environ:
         if not Path(path[0]).is_file():
             path[1] = False
             print('Please install:', Path(package).name)
+if not depends['feh'][1] or not depends['xclip'][1]:
+    print('Using rwal without noted packages reduces functionality.')
 
 
 class Rwall:
     """Randomizes wallpaper under multiple environments"""
+
     def __init__(self, **kwargs):  # classwide perams
         # User's home directory
         self.home = os.path.expanduser('~')
@@ -107,7 +116,7 @@ class Rwall:
         self.desktopEnvironment = None
 
         # valid image types; to expand, use imghdr.what() values
-        self.fileTypes = ('jpeg', 'png')
+        self.fileTypes = ('jpeg', 'png', 'bmp')
 
         # configuration files
         if self.desktopSession in self.kdeEnv:
@@ -126,18 +135,23 @@ class Rwall:
 
         # class-wide dictionary and its defaults
         self._state = kwargs
-        self._state['verbose'] = False
-        self._state['directory'] = None
-        self._state['filter'] = False
-        self._state['slideshow'] = False
-        self._state['parent'] = False
-        # values are 'random', 'next', 'previous', 'commandline', and 'first'
-        self._state['image'] = 'random'
-        # display if modes settings wrong or missing
-        self._state['mode_error'] = textwrap.dedent("""\
-            WARNING: configuration fault detected
-            check modes in rwall.conf
-            fallback mode applied""")
+        self._state = {
+            'list': False,
+            'verbose': False,
+            'directory': None,
+            'aspect_ratio_filter': False,
+            'slideshow': False,
+            'parent': False,
+            'rez_filter': False,
+            # image values are 'random', 'next', 'previous',
+            # 'commandline', and 'first':
+            'image': 'random',
+            # display if modes settings wrong or missing
+            'mode_error': dedent("""\
+                        WARNING: configuration fault detected
+                        check modes in rwall.conf
+                        fallback mode applied""")
+        }
 
         # fallback wallpaper modes
         if 'openbox' in self.desktopSession:
@@ -154,6 +168,7 @@ class Rwall:
     """
     CONFIGURATION FUNCTIONS
     """
+
     def set_state(self, key, value):
         self._state[key] = value
 
@@ -174,21 +189,24 @@ class Rwall:
 
         # check for existence of config file, create if absent
         if not self.configFile.is_file():
-            self.config.add_section('rWall Configuration')
-            self.config.set('rWall Configuration',
-                            textwrap.dedent("""\
-            # Please modify this file to change rWall\'s behavior.
+            self.config.add_section('rwal Configuration')
+            self.config.set('rwal Configuration',
+                            dedent("""\
+            # Please modify this file to change rwal\'s behavior.
             # If you make a mistake, a clue will print to the terminal.
-            # If all else fails just delete this file and run rwall.py.
+            # If all else fails just delete this file and run rwal.py.
             # A fresh working default config file will be created for you.
-            # Thanks for using rWall. Have fun!"""))
+            # Thanks for using rwal. Have fun!"""))
 
             # default settings
             self.config.add_section('Defaults')
             # announce wallpaper application and image/environment stats
             # self.config.set('Defaults','Announce', 'no')
             # replace 'editor' with user's default text editor
-            self.config.set('Defaults', 'Default Config Editor', 'editor')
+            if 'APPDATA' in os.environ:
+                self.config.set('Defaults', 'Default Config Editor', 'notepad')
+            else:
+                self.config.set('Defaults', 'Default Config Editor', 'editor')
             self.config.set('Defaults', 'Default Background Editor', 'gimp')
             self.config.set('Defaults', 'Default Directory',
                             '{}'.format(default))
@@ -198,33 +216,33 @@ class Rwall:
 
             # wallpaper mode presets
             self.config.set('Wallpaper Modes',
-                            textwrap.dedent("""\
+                            dedent("""\
             # Aspect Ratio Filter Options:
             # sd480, hd1050, hd1080, hd1050x2, hd1080x2, and auto"""))
             self.config.set('Wallpaper Modes', 'Aspect Ratio Filter', 'none')
             self.config.set('Wallpaper Modes',
-                            textwrap.dedent("""\n\
+                            dedent("""\n\
             # Wallpaper Mode Settings by Environment:
             # KDE modes must be selected within KDE\'s slideshow options"""))
             self.config.set('Wallpaper Modes',
-                            textwrap.dedent("""\n\
+                            dedent("""\n\
             # GNOME3 (GNOME Shell, Cinnamon, Unity, and MATE):
             # none, centered, scaled, spanned, stretched, wallpaper, zoom"""))
             self.config.set('Wallpaper Modes', 'Cinnamon', 'scaled')
             self.config.set('Wallpaper Modes', 'GNOME', 'scaled')
             self.config.set('Wallpaper Modes', 'MATE', 'scaled')
             self.config.set('Wallpaper Modes',
-                            textwrap.dedent("""\n\
+                            dedent("""\n\
             # Xfce:
             # 0-Auto, 1-Centered, 2-Tiled, 3-Stretched, 4-Scaled, 5-Zoomed"""))
             self.config.set('Wallpaper Modes', 'Xfce', '4')
             self.config.set('Wallpaper Modes',
-                            textwrap.dedent("""\n\
+                            dedent("""\n\
             # Openbox (or any use of feh):
             # --bg-max,--bg-scale,--bg-tile,--bg-fill,--bg-center"""))
             self.config.set('Wallpaper Modes', 'Openbox', '--bg-max')
             self.config.set('Wallpaper Modes',
-                            textwrap.dedent("""\n\
+                            dedent("""\n\
             # Lxde:
             # tiled, center, scaled, fit, stretch"""))
             self.config.set('Wallpaper Modes', 'LXDE', 'scaled')
@@ -245,12 +263,12 @@ class Rwall:
                 self.config.write(configfile)
 
             print('Default configuration initialized.')
-            print('Configuration file: {}\nuse rwall.py -c to edit file\
+            print('Configuration file: {}\nuse rwal.py -c to edit file\
                 '.format(str(self.configFile)))
             print('Default image directory is set to {}'.format(default))
-            sys.exit(textwrap.dedent("""\
-                Please run rwall.py again to select and apply a background.
-                If you need help, type rwall.py -h in a terminal."""))
+            sys.exit(dedent("""\
+                Please run rwal.py again to select and apply a background.
+                If you need help, type rwal.py -h in a terminal."""))
         else:
             # open config file for reading if it already exists
             self.config.read(str(self.configFile))
@@ -270,7 +288,8 @@ class Rwall:
             with open(str(self.bgFile), 'w') as configfile:
                 # open bgconfig file for reading if it already exists
                 self.bgConfig.write(configfile)
-                # bgconfig accessors assigned vars here when used more than once
+                # bgconfig accessors assigned vars here when used more than
+                # once
 
             print(
                 'created background configuration file: {}'.format(self.bgFile))
@@ -280,11 +299,12 @@ class Rwall:
     """
     DIRECTORY AND ENVIRONMENT FUNCTIONS
     """
+
     def clear_screen(self, com='clear'):
         if 'APPDATA' not in os.environ:
-            call(com, shell=True)
+            run(com, shell=True)
         else:
-            call('cls', shell=True)
+            run('cls', shell=True)
 
     def change_directory(self, directory):
         """reads config or commandline for directories, then checks path
@@ -294,7 +314,7 @@ class Rwall:
                                                   directory.title())
         elif directory in self.dirFlags[5:]:
             self.imageDirectory = self.config.get('Preset Image Directories',
-                                                'Directory{}'.format(directory))
+                                                  'Directory{}'.format(directory))
         elif directory == 'directory':  # commandline-supplied directory
             self.imageDirectory = self._state['directory']
         elif directory == 'reshuffle':
@@ -340,14 +360,28 @@ class Rwall:
             self.desktopEnvironment = self.set_openbox()
         return self.desktopEnvironment
 
+    def print_presets(self):
+        print('Default image directory: ', self.config.get('Defaults',
+                                                           'Default Directory'))
+        print('\nPreset image directories:')
+        for i in range(1, 6):
+            print('Directory {}: '.format(i), self.config.get(
+                'Preset Image Directories', 'Directory{}'.format(i)))
+
     """
     IMAGE ACQUISITION FUNCTIONS
     """
+
     def get_source_images(self):
         """create list of images from given directory"""
         # list files recursively, or only in target directory
-        extensions = ('.jpg', '.jpeg', '.png')
-        if not self._state['parent']:
+        extensions = ('.jpg', '.jpeg', '.png', '.bmp')
+        if self._state['list']:
+            rawList = self.get_imagesList()
+            for line in rawList:
+                if line.endswith(extensions):
+                    self.sourceImages.append(line)
+        elif not self._state['parent']:
             for root, dirnames, filenames in os.walk(self.imageDirectory):
                 for file in filenames:
                     candidate = str(Path(root, file))
@@ -359,45 +393,75 @@ class Rwall:
                 if candidate.endswith(extensions):
                     self.sourceImages.append(candidate)
 
+        if modules['Pillow']:
+            if self._state['aspect_ratio_filter'] and not self._state['rez_filter']:
+                self.image_aspect_ratio_filter()
+            if self._state['rez_filter'] and not self._state['aspect_ratio_filter']:
+                self.match_image_rez()
+        else:
+            print('NOTICE: Pillow not installed. Image filtering disabled.')
+
         # check if images list is empty
         try:
             if self.sourceImages[0]:
                 if self._state['verbose']:
-                    print('Image list build successful!')
+                    if len(self.sourceImages) > 1:
+                        print('Success: found {} valid images.'.format(
+                            len(self.sourceImages)))
+                    else:
+                        print('Success: found 1 valid source image.')
         except IndexError:
-            sys.exit('No valid images in "{}"'.format(self.imageDirectory))
-
-        if modules['Pillow']:
-            self.image_filter()
-        else:
-            print('NOTICE: Pillow not installed. Image filtering disabled.')
+            sys.exit('No valid images found in "{}"'.format(
+                self.imageDirectory))
 
         # prevent runaway append to images.txt during slideshow
         if not self._state['slideshow']:
             self.write_images_list_file()
         return self.sourceImages
 
-    def get_screen_rez(self):
+    def match_image_rez(self):
+        if self._state['rez_filter'] and not self._state['aspect_ratio_filter']:
+            filtered_images = []
+            if self._state['rez_filter'][0] == 'auto': # future auto rez feature
+                _rezFilter = self.get_screen_size(rez=True)
+            else:
+                X, Y = self._state['rez_filter']
+                _rezFilter = int(X), int(Y)
+            for pic in self.sourceImages:
+                try:
+                    if (Image.open(pic).size == _rezFilter):
+                        filtered_images.append(pic)
+                except IOError:  # skip on corrupt image
+                    continue
+            self.sourceImages = filtered_images
+            return self.sourceImages
+        else:
+            sys.exit('Resolution filter incompatible with aspect ratio filter.')
+
+    def get_screen_size(self, rez=False):
         if modules['Tkinter']:
             root = tk.Tk()
             screen_width = root.winfo_screenwidth()
             screen_height = root.winfo_screenheight()
-            return screen_width / screen_height
-        elif self._state['filter'] == 'auto':
-            print(textwrap.dedent("""\
+            if rez: # get resolution
+                return screen_width, screen_height
+            else: # get aspect ratio
+                return screen_width / screen_height
+        elif self._state['aspect_ratio_filter'] == 'auto':
+            print(dedent("""\
                 Automatic aspect ratio detection disabled.
                 Please install python3-tk package."""))
 
-    def image_filter(self):
+    def image_aspect_ratio_filter(self):
         """optionally filters images by aspect ratio"""
         # container for final filtered list
         filtered_images = []
         ratios = dict(sd480=4 / 3, hd1050=8 / 5, hd1080=16 / 9,
                       dci4k=256 / 135, hd1050x2=16 / 5, hd1080x2=32 / 9,
-                      dci4kx2=512 / 135, auto=self.get_screen_rez())
+                      dci4kx2=512 / 135, auto=self.get_screen_size())
         # commandline overrides config file filter setting
-        if self._state['filter']:
-            aspect_ratio = self._state['filter']
+        if self._state['aspect_ratio_filter']:
+            aspect_ratio = self._state['aspect_ratio_filter']
         else:
             aspect_ratio = self.config.get(
                 'Wallpaper Modes', 'Aspect Ratio Filter', fallback='none')
@@ -405,8 +469,7 @@ class Rwall:
             for pic in self.sourceImages:
                 # get image's aspect ratio, then match against filter
                 try:
-                    im = Image.open(pic)
-                    x, y = im.size
+                    x, y = Image.open(pic).size
                     image_dimensions = Fraction(x, y)
                     im_x = image_dimensions.numerator
                     im_y = image_dimensions.denominator
@@ -420,24 +483,29 @@ class Rwall:
                 self.sourceImages = filtered_images
                 return self.sourceImages
         elif aspect_ratio not in ['None', 'NONE', 'no', 'none', '']:
-            print('Invalid value. Check image filter setting.')
+            print('ERROR: Check Aspect Ratio Filter setting in config file.')
 
     def write_images_list_file(self):
         """produce images file for next/previous across user sessions therefore
         this file is not temporary"""
-        with open('{}/images.txt'.format(self.configDirectory), 'w') \
-                as images_list_file:
+        with open('{}/images.txt'.format(self.configDirectory), 'w', \
+                                        encoding='utf-8') as images_list_file:
             for line in self.sourceImages:
                 print(line, file=images_list_file, end='\n')
 
     def get_imagesList(self):
         """sorted list from images.txt for next/previous"""
         try:
-            with open('{}/images.txt'.format(self.configDirectory)) as images:
-                self.imagesList = sorted(images.read().splitlines())
+            if self._state['list']:
+                listSource = self._state['list']
+            else:
+                listSource = '{}/images.txt'.format(self.configDirectory)
+            with open(listSource) as images:
+                imagesSet = set(images.read().splitlines())
+                self.imagesList = sorted(list(imagesSet))
         except FileNotFoundError:
-            sys.exit(textwrap.dedent('No images file. Point rwall.py at a '
-                                     'directory containing images using -d.'))
+            sys.exit(dedent('No images file. Point rwal.py at a '
+                            'directory containing images using -d.'))
         return self.imagesList
 
     def select_random_image(self):
@@ -524,8 +592,6 @@ class Rwall:
         self.change_directory(directory)
         self.get_source_images()
         self.write_images_list_file()
-        self.selectedImage = self.sourceImages[0]
-        self.index_background()
         try:
             # count=0 sets count to number of files in imagesList
             # starts slideshow from first images in list
@@ -542,16 +608,17 @@ class Rwall:
                 count -= 1
                 self.clear_screen()
                 if self._state['verbose']:
-                    current_dir = self.bgConfig.get('Temp', 'Current Directory')
+                    current_dir = self.bgConfig.get(
+                        'Temp', 'Current Directory')
                     time_remaining = round(float((count * delay) / 60), 2)
                     print('{0} wallpaper changes remain over {1} minutes:\n{2}\
                         '.format(count, time_remaining, current_dir),
                           '\nPress Ctrl-C to cancel.')
                 else:
-                    print('rWall Slideshow\nPress Ctrl-C to cancel.')
+                    print('rwal Slideshow\nPress Ctrl-C to cancel.')
             else:
                 self.clear_screen('reset')
-                print('rWall slideshow has ended.')
+                print('rwal slideshow has ended.')
         except KeyboardInterrupt:
             self.clear_screen('reset')
             sys.exit('Slideshow terminated by user...')
@@ -574,7 +641,7 @@ class Rwall:
 
     def skip_image(self):
         self.index_background()
-        print('rWall skipped:\n{}\nIt is a corrupted or missing file.\
+        print('rwal skipped:\n{}\nIt is a corrupted or missing file.\
               '.format(self.get_index_background()))
         if self._state['image'] == 'next':
             self.selectedImage = self.select_next_image()
@@ -615,6 +682,7 @@ class Rwall:
     """
     DESKTOP ENVIRONMENT COMMANDS
     """
+
     def get_mode(self, environment):
         """check and apply user-defined mode format; use fallback if corrupt"""
         if environment == 'cinnamon':
@@ -662,7 +730,7 @@ class Rwall:
             'gsettings set org.gnome.desktop.background picture-options\
             {};'.format(self._state['mode']) + \
             'gsettings set org.gnome.desktop.background picture-uri \
-            \'file://{}\''.format(image)
+            \"file://{}\"'.format(image)
         return gnome3
 
     def set_mate(self):
@@ -719,7 +787,7 @@ class Rwall:
         # Note: in Python3, strings passed to windll must be encoded as ascii
         image = self.select_image()
         windows = ctypes.windll.user32.SystemParametersInfoA(0x14, 0,
-            image.encode('ascii'), 3)
+                                                             image.encode('ascii'), 3)
         return windows
 
     def set_mac(self):
@@ -734,12 +802,13 @@ class Rwall:
     """
     BACKGROUND FUNCTIONS
     """
+
     def set_background(self):
         """executes appropriate environment command to set wallpaper"""
         if 'APPDATA' in os.environ:
             return self.set_desktop_environment()
         else:
-            return call(self.set_desktop_environment(), shell=True)
+            return run(self.set_desktop_environment(), shell=True)
 
     def get_index_background(self):
         """"retrieves index for next/previous functions"""
@@ -754,28 +823,28 @@ class Rwall:
         # if in windows, don't use xclip; if in MacOS us pbcopy
         if 'APPDATA' not in os.environ:
             if depends['xclip'][1]:
-                call('echo -n "{}" | \
+                run('echo -n "{}" | \
                      xclip -selection clipboard'.format(applied_bg), shell=True)
         elif 'Apple_PubSub_Socket_Render' in os.environ:
-            call('echo -n {} | pbcopy'.format(applied_bg), shell=True)
+            run('echo -n {} | pbcopy'.format(applied_bg), shell=True)
         return applied_bg
 
     def edit_background(self):
         applied_bg = self.get_record_background()
         edit_bg = self.config.get('Defaults', 'Default Background Editor')
-        return call('{} \'{}\''.format(edit_bg, applied_bg), shell=True)
+        return run('{} \'{}\''.format(edit_bg, applied_bg), shell=True)
 
     def edit_config(self):
         self.set_config()
         edit_conf = self.config.get('Defaults', 'Default Config Editor')
-        return call('{} {}/rwall.conf'.format(edit_conf, self.configDirectory),
+        return run('{} {}/rwall.conf'.format(edit_conf, self.configDirectory),
                     shell=True)
 
     def announce(self):
         """output to stdout if --verbose is True"""
         current_dir = self.bgConfig.get('Temp', 'Current Directory')
-        if self._state['filter']:
-            aspect_ratio = self._state['filter']
+        if self._state['aspect_ratio_filter']:
+            aspect_ratio = self._state['aspect_ratio_filter']
         else:
             aspect_ratio = self.config.get(
                 'Wallpaper Modes', 'Aspect Ratio Filter', fallback='none')
@@ -796,11 +865,11 @@ def main(argv):
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter,
         prog=str(Path(sys.argv[0]).name),
-        description=textwrap.dedent("""\
+        description=dedent("""\
         DESCRIPTION:
-        rWall randomizes your desktop background image in GNOME3, Cinnamon,
+        rwal randomizes your desktop background image in GNOME3, Cinnamon,
         MATE, KDE 4 & 5, Xfce, Openbox, LXDE, Mac OS X, and Windows 7 and newer;
-        if none of these environments are detected, then rWall attempts
+        if none of these environments are detected, then rwal attempts
         to use feh to set your background.
 
         SETUP:
@@ -808,86 +877,100 @@ def main(argv):
         in "~/.config/rwall/{}" accordingly. You may
         use "%(prog)s -c" to edit this file, if you like. For KDE usage
         set KDE's desktop slideshow feature to "~/.config/rwall/kde-plasma".
-        rWall requires feh for Openbox and unidentified desktop environs.  See
+        rwal requires feh for Openbox and unidentified desktop environs.  See
         your desktop environment's documentation for help setting up feh.
-        """.format(rwall.desktopSession)), epilog=textwrap.dedent("""\
-        rWall is developed by rockhazard and licensed under GPL3.0. There are no
+        """.format(rwall.desktopSession)), epilog=dedent("""\
+        rwal is developed by rockhazard and licensed under GPL3.0. There are no
         warranties expressed or implied.
         """))
     parser.add_argument('--version', help='print version info then exit',
-        version='rWall 3.5q "Akira", GPL3.0 (c) 2016, by rockhazard',
-        action='version')
+                        version='rwal 3.5q "Akira", GPL3.0 (c) 2016, by rockhazard',
+                        action='version')
     parser.add_argument('-v', '--verbose',
-        help='print detailed feedback on rWall functions', action='store_true')
+                        help='print detailed feedback on rwal functions', action='store_true')
     parser.add_argument('-c', '--config',
-        help='edit the configuration file, set initially to the user\'s \
+                        help='edit the configuration file, set initially to the user\'s \
         default text editor', action='store_true')
-    parser.add_argument('-a', '--filter', help=
-        'filter images by one of these aspect ratios: sd480, hd1050, hd1080, \
+    parser.add_argument('-a', '--filter', help='filter images by one of these aspect ratios: sd480, hd1050, hd1080, \
         dci4k, hd1050x2, hd1080x2, dci4kx2, and auto. Note that the notation \
         is designed for easy identification by popular sample resolution, but \
         multiple resolutions may be filtered per aspect ratio (such as 4k UHD \
         and 1080 HD, since both are 16:9 aspect ratio).', nargs=1, metavar=(
         'ASPECT_RATIO'))
     parser.add_argument('-t', '--parent',
-        help='ignore images in subdirectories',
-        action='store_true')
-    parser.add_argument('-d', '--directory', help=
-        'random background from DIRECTORY, e.g. "%(prog)s -d ~/Pictures"',
-        nargs=1)
+                        help='ignore images in subdirectories',
+                        action='store_true')
+    parser.add_argument('-y', '--presets',
+                        help='List all preset image directories configured in rwall.conf.',
+                        action='store_true')
+    parser.add_argument('--screen_size', help='Report current desktop resolution.', 
+                        action='store_true')
+    parser.add_argument('-d', '--directory', help='random background from DIRECTORY, e.g. "%(prog)s -d ~/Pictures"',
+                        nargs=1)
     parser.add_argument('-r', '--reshuffle',
-        help='random background from current directory',
-        action='store_true')
+                        help='random background from current directory',
+                        action='store_true')
     parser.add_argument('-1', '--directory1',
-        help='random background from images in first preset directory',
-        action='store_true')
+                        help='random background from images in first preset directory',
+                        action='store_true')
     parser.add_argument('-2', '--directory2',
-        help='random background from images in second preset directory',
-        action='store_true')
+                        help='random background from images in second preset directory',
+                        action='store_true')
     parser.add_argument('-3', '--directory3',
-        help='random background from images in third preset directory',
-        action='store_true')
+                        help='random background from images in third preset directory',
+                        action='store_true')
     parser.add_argument('-4', '--directory4',
-        help='random background from images in fourth preset directory',
-        action='store_true')
+                        help='random background from images in fourth preset directory',
+                        action='store_true')
     parser.add_argument('-5', '--directory5',
-        help='random background from images in fifth preset directory',
-        action='store_true')
+                        help='random background from images in fifth preset directory',
+                        action='store_true')
     parser.add_argument('-n', '--next',
-        help='applies next background alphabetically from the current\
+                        help='applies next background alphabetically from the current\
             image directory', action='store_true')
     parser.add_argument('-p', '--previous',
-        help='applies previous background alphabetically from the current\
+                        help='applies previous background alphabetically from the current\
             image directory', action='store_true')
-    parser.add_argument('-i', '--image', help=
-        'apply IMAGE as wallpaper: "%(prog)s -i /path/to/file"', nargs=1)
-    parser.add_argument('-f', '--first', help=
-        'first background from DIRECTORY, e.g. "%(prog)s -f ~/Pictures"',
-        nargs=1, metavar='DIRECTORY')
-    parser.add_argument('-s', '--slideshow', help=
-        """create a background slideshow by looping the background in
+    parser.add_argument(
+        '-i', '--image', help='apply IMAGE as wallpaper: "%(prog)s -i /path/to/file"', nargs=1)
+    parser.add_argument('-f', '--first', help='first background from DIRECTORY, e.g. "%(prog)s -f ~/Pictures"',
+                        nargs=1, metavar='DIRECTORY')
+    parser.add_argument('-l', '--list', help='Use a file of newline-separated image paths, instead of a directory',
+                        nargs=1, metavar='FILE')
+    parser.add_argument('-q', '--resolution',
+        help='Filter images by resolution using height and width in pixels \
+        (e.g. "1920 1080"), or "auto" to use the current desktop resolution \
+        as returned by the --screen_size option.', nargs='*')
+    parser.add_argument('-s', '--slideshow', help="""create a background slideshow by looping the background in
         DIRECTORY directory, every DELAY seconds, COUNT number of times,
         e.g. "%(prog)s -s ~/Pictures 5 10". DELAY must be greater than 0.\
         COUNT of 0 sets COUNT to number of images in given directory. SWITCH
         is either "random" or "next", and describes the order of the loop.
         DIRECTORY can also be 1 through 5, or directory1 through directory5.
         These are mapped to your preset directories in rwall.conf.""",
-        nargs=4,  metavar=('DIRECTORY', 'DELAY', 'COUNT', 'SWITCH'))
+                        nargs=4,  metavar=('DIRECTORY', 'DELAY', 'COUNT', 'SWITCH'))
     parser.add_argument('-b', '--printbackground',
-        help=
-        'prints filename of last-applied background to stdout and clipboard',
-        action='store_true')
+                        help='prints filename of last-applied background to stdout and clipboard',
+                        action='store_true')
     parser.add_argument('-e', '--editbackground',
-        help='edit the current background, defaulted to the GIMP',
-        action='store_true')
+                        help='edit the current background, defaulted to the GIMP',
+                        action='store_true')
     args = parser.parse_args()
     rwall.set_state('verbose', args.verbose)
 
+    if args.presets:
+        sys.exit(rwall.print_presets())
+    if args.screen_size:
+        sys.exit(rwall.get_screen_size(rez=True))
     if args.parent:
         rwall.set_state('parent', args.parent)
-    if args.filter:
-        rwall.set_state('filter', args.filter[0])
-    if args.reshuffle:
+    if args.filter and not args.resolution:
+        rwall.set_state('aspect_ratio_filter', args.filter[0])
+    if args.resolution and not args.filter: # use initial list to consume auto
+        rwall.set_state('rez_filter', args.resolution)
+    if args.list:
+        rwall.set_state('list', args.list[0])
+    elif args.reshuffle:
         rwall.change_directory('reshuffle')
     elif args.directory1:
         rwall.change_directory('directory1')
@@ -915,9 +998,9 @@ def main(argv):
         rwall.set_state('slideshow', True)
         rwall.set_state('directory', args.slideshow[0])
         sys.exit(rwall.start_slideshow(args.slideshow[0],
-                int(args.slideshow[1]),
-                int(args.slideshow[2]),
-                args.slideshow[3]))
+                                       int(args.slideshow[1]),
+                                       int(args.slideshow[2]),
+                                       args.slideshow[3]))
     elif args.directory:
         if Path(args.directory[0]).is_dir():
             rwall.set_state('directory', args.directory[0])
