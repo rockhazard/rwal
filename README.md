@@ -21,7 +21,7 @@ rwal is designed to turn your background into a kind of flipbook. It's particula
 * A slideshow, using either random or alphabetical settings.
 * Filter images by the aspect ratio of your screen (or choose from a number of manual alternatives), so you never have to see a background that doesn't fit again.
 * Edit the current background with a quick command.
-* Lightweight and highly scriptable, rwal is designed to be used with shortcuts and other programs, in addition toe being tiny and highly portable.
+* Lightweight and highly scriptable, rwal is designed to be used with shortcuts and other programs, in addition to being tiny and highly portable.
 
 ### How do I get set up? ###
 
