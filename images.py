@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """Module for collecting and selecting images from various sources"""
-import sys, os, random, imghdr, subprocess
+import sys
+import os
+import random
+import imghdr
+import subprocess
 from textwrap import dedent
 import tkinter as tk
 from fractions import Fraction
@@ -150,8 +154,8 @@ class ImageCollector(State):
     def write_images_list_file(self):
         """produce images file for next/previous across user sessions therefore
         this file is not temporary"""
-        with open('{}/images.txt'.format(self.configDirectory), 'w') \
-                as images_list_file:
+        with open('{}/images.txt'.format(self.configDirectory), 'w',
+                  encoding='utf-8') as images_list_file:
             for line in self.sourceImages:
                 print(line, file=images_list_file, end='\n')
 
