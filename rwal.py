@@ -36,7 +36,7 @@ REQUIREMENTS: Python3.2+, python3-pil, python3-tk, feh, xclip, and a supported
 desktop environment.
 BUGS: ---
 NOTES: Feh is used for Openbox and any unknown environment. KDE users must click
-Default Desktop Settings > Slideshow, apply "~/.config/rwall/kde-plasma", and
+Default Desktop Settings > Slideshow, apply "~/.config/rwal/kde-plasma", and
 may have to logout/login.
 AUTHOR: rockhazard, rockhazardz@gmail.com
 ACKNOLEDGMENTS: xfconf shell string: Peter Levi (please go check out Variety!
@@ -88,7 +88,7 @@ if not depends['feh'][1] or not depends['xclip'][1]:
     print('Using rwal without noted packages reduces functionality.')
 
 
-class Rwall:
+class Rwal:
     """Randomizes wallpaper under multiple environments"""
 
     def __init__(self, **kwargs):  # classwide perams
@@ -121,12 +121,12 @@ class Rwall:
         # configuration files
         if self.desktopSession in self.kdeEnv:
             self.configDirectory = str(Path(self.home,
-                                            '.config/rwall/kde-plasma/'))
+                                            '.config/rwal/kde-plasma/'))
         else:
             self.configDirectory = str(Path(self.home,
-                                            '.config/rwall/{}'.format(
+                                            '.config/rwal/{}'.format(
                                                 self.desktopSession)))
-        self.configFile = Path(self.home, self.configDirectory, 'rwall.conf')
+        self.configFile = Path(self.home, self.configDirectory, 'rwal.conf')
         self.bgFile = Path(self.home, self.configDirectory, 'background.conf')
         # configuration file parser
         self.config = configparser.RawConfigParser(allow_no_value=True)
@@ -149,7 +149,7 @@ class Rwall:
             # display if modes settings wrong or missing
             'mode_error': dedent("""\
                         WARNING: configuration fault detected
-                        check modes in rwall.conf
+                        check modes in rwal.conf
                         fallback mode applied""")
         }
 
@@ -189,8 +189,8 @@ class Rwall:
 
         # check for existence of config file, create if absent
         if not self.configFile.is_file():
-            self.config.add_section('rwal Configuration')
-            self.config.set('rwal Configuration',
+            self.config.add_section('Rwal Configuration')
+            self.config.set('Rwal Configuration',
                             dedent("""\
             # Please modify this file to change rwal\'s behavior.
             # If you make a mistake, a clue will print to the terminal.
@@ -375,7 +375,7 @@ class Rwall:
     def get_source_images(self):
         """create list of images from given directory"""
         # list files recursively, or only in target directory
-        extensions = ('.jpg', '.jpeg', '.png', '.bmp')
+        extensions = ('.jpg', '.jpeg', '.png', '.bmp', '.tiff', '.gif')
         if self._state['list']:
             rawList = self.get_imagesList()
             for line in rawList:
@@ -837,7 +837,7 @@ class Rwall:
     def edit_config(self):
         self.set_config()
         edit_conf = self.config.get('Defaults', 'Default Config Editor')
-        return run('{} {}/rwall.conf'.format(edit_conf, self.configDirectory),
+        return run('{} {}/rwal.conf'.format(edit_conf, self.configDirectory),
                     shell=True)
 
     def announce(self):
@@ -856,8 +856,8 @@ class Rwall:
 
 
 def main(argv):
-    rwall = Rwall()
-    rwall.set_config()
+    rwal = Rwal()
+    rwal.set_config()
 
     """
     COMMANDLINE OPTIONS
@@ -873,13 +873,13 @@ def main(argv):
         to use feh to set your background.
 
         SETUP:
-        Choose various background image source directories, then edit rwall.conf
-        in "~/.config/rwall/{}" accordingly. You may
+        Choose various background image source directories, then edit rwal.conf
+        in "~/.config/rwal/{}" accordingly. You may
         use "%(prog)s -c" to edit this file, if you like. For KDE usage
-        set KDE's desktop slideshow feature to "~/.config/rwall/kde-plasma".
+        set KDE's desktop slideshow feature to "~/.config/rwal/kde-plasma".
         rwal requires feh for Openbox and unidentified desktop environs.  See
         your desktop environment's documentation for help setting up feh.
-        """.format(rwall.desktopSession)), epilog=dedent("""\
+        """.format(rwal.desktopSession)), epilog=dedent("""\
         rwal is developed by rockhazard and licensed under GPL3.0. There are no
         warranties expressed or implied.
         """))
@@ -891,17 +891,17 @@ def main(argv):
     parser.add_argument('-c', '--config',
                         help='edit the configuration file, set initially to the user\'s \
         default text editor', action='store_true')
-    parser.add_argument('-a', '--filter', help='filter images by one of these aspect ratios: sd480, hd1050, hd1080, \
-        dci4k, hd1050x2, hd1080x2, dci4kx2, and auto. Note that the notation \
-        is designed for easy identification by popular sample resolution, but \
-        multiple resolutions may be filtered per aspect ratio (such as 4k UHD \
-        and 1080 HD, since both are 16:9 aspect ratio).', nargs=1, metavar=(
-        'ASPECT_RATIO'))
+    parser.add_argument('-a', '--filter', help='filter images by one of these \
+        aspect ratios: sd480, hd1050, hd1080, dci4k, hd1050x2, hd1080x2, dci4kx2, \
+        and auto. Note that the notation is designed for easy identification by \
+        popular sample resolution, but multiple resolutions may be filtered per \
+        aspect ratio (such as 4k UHD and 1080 HD, since both are 16:9 aspect ratio).', 
+        nargs=1, metavar=('ASPECT_RATIO'))
     parser.add_argument('-t', '--parent',
                         help='ignore images in subdirectories',
                         action='store_true')
     parser.add_argument('-y', '--presets',
-                        help='List all preset image directories configured in rwall.conf.',
+                        help='List all preset image directories configured in rwal.conf.',
                         action='store_true')
     parser.add_argument('--screen_size', help='Report current desktop resolution.', 
                         action='store_true')
@@ -947,7 +947,7 @@ def main(argv):
         COUNT of 0 sets COUNT to number of images in given directory. SWITCH
         is either "random" or "next", and describes the order of the loop.
         DIRECTORY can also be 1 through 5, or directory1 through directory5.
-        These are mapped to your preset directories in rwall.conf.""",
+        These are mapped to your preset directories in rwal.conf.""",
                         nargs=4,  metavar=('DIRECTORY', 'DELAY', 'COUNT', 'SWITCH'))
     parser.add_argument('-b', '--printbackground',
                         help='prints filename of last-applied background to stdout and clipboard',
@@ -956,73 +956,73 @@ def main(argv):
                         help='edit the current background, defaulted to the GIMP',
                         action='store_true')
     args = parser.parse_args()
-    rwall.set_state('verbose', args.verbose)
+    rwal.set_state('verbose', args.verbose)
 
     if args.presets:
-        sys.exit(rwall.print_presets())
+        sys.exit(rwal.print_presets())
     if args.screen_size:
-        sys.exit(rwall.get_screen_size(rez=True))
+        sys.exit(rwal.get_screen_size(rez=True))
     if args.parent:
-        rwall.set_state('parent', args.parent)
+        rwal.set_state('parent', args.parent)
     if args.filter and not args.resolution:
-        rwall.set_state('aspect_ratio_filter', args.filter[0])
+        rwal.set_state('aspect_ratio_filter', args.filter[0])
     if args.resolution and not args.filter: # use initial list to consume auto
-        rwall.set_state('rez_filter', args.resolution)
+        rwal.set_state('rez_filter', args.resolution)
     if args.list:
-        rwall.set_state('list', args.list[0])
+        rwal.set_state('list', args.list[0])
     elif args.reshuffle:
-        rwall.change_directory('reshuffle')
+        rwal.change_directory('reshuffle')
     elif args.directory1:
-        rwall.change_directory('directory1')
+        rwal.change_directory('directory1')
     elif args.directory2:
-        rwall.change_directory('directory2')
+        rwal.change_directory('directory2')
     elif args.directory3:
-        rwall.change_directory('directory3')
+        rwal.change_directory('directory3')
     elif args.directory4:
-        rwall.change_directory('directory4')
+        rwal.change_directory('directory4')
     elif args.directory5:
-        rwall.change_directory('directory5')
+        rwal.change_directory('directory5')
     elif args.next:
-        rwall.set_state('image', 'next')
+        rwal.set_state('image', 'next')
     elif args.previous:
-        rwall.set_state('image', 'previous')
+        rwal.set_state('image', 'previous')
     elif args.image:
-        rwall.set_state('image', 'commandline')
-        rwall.set_state('directory', args.image[0])
+        rwal.set_state('image', 'commandline')
+        rwal.set_state('directory', args.image[0])
     elif args.printbackground:
-        print(rwall.get_record_background())
+        print(rwal.get_record_background())
         sys.exit()
     elif args.editbackground:
-        sys.exit(rwall.edit_background())
+        sys.exit(rwal.edit_background())
     elif args.slideshow:
-        rwall.set_state('slideshow', True)
-        rwall.set_state('directory', args.slideshow[0])
-        sys.exit(rwall.start_slideshow(args.slideshow[0],
+        rwal.set_state('slideshow', True)
+        rwal.set_state('directory', args.slideshow[0])
+        sys.exit(rwal.start_slideshow(args.slideshow[0],
                                        int(args.slideshow[1]),
                                        int(args.slideshow[2]),
                                        args.slideshow[3]))
     elif args.directory:
         if Path(args.directory[0]).is_dir():
-            rwall.set_state('directory', args.directory[0])
-            rwall.change_directory('directory')
+            rwal.set_state('directory', args.directory[0])
+            rwal.change_directory('directory')
         else:
             sys.exit('Invalid directory! Check commandline argument.')
     elif args.first:
-        rwall.set_state('image', 'first')
+        rwal.set_state('image', 'first')
         if Path(args.first[0]).is_dir():
-            rwall.set_state('directory', args.first[0])
-            rwall.change_directory('directory')
+            rwal.set_state('directory', args.first[0])
+            rwal.change_directory('directory')
         else:
             sys.exit('Invalid directory! Check commandline argument.')
     elif args.config:
-        sys.exit(rwall.edit_config())
+        sys.exit(rwal.edit_config())
     else:
-        rwall.change_directory('default')
+        rwal.change_directory('default')
 
-    rwall.set_background()
+    rwal.set_background()
 
     if args.verbose:
-        rwall.announce()
+        rwal.announce()
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv[1:]))
