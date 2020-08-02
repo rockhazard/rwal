@@ -56,3 +56,4 @@ coverage.xml
 
 # PyBuilder
 target/
+resources/
