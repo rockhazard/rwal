@@ -51,6 +51,8 @@ class Environment(State):
 
     def get_mode(self, desktop):
         """check and apply user-defined mode format; use fallback if invalid"""
+        self.config.read(str(self.configFile))
+        
         gnomeMode = ('none', 'centered', 'scaled', 'spanned', 'stretched',
                      'wallpaper', 'zoom')
         if desktop == 'cinnamon':
