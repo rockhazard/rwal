@@ -146,12 +146,26 @@ class Rwal:
             # image values are 'random', 'next', 'previous',
             # 'commandline', and 'first':
             'image': 'random',
+            'mode': False,
+            'common_modes': ('none', 'centered', 'scaled', 'spanned', 'stretched',
+                        'wallpaper', 'zoom'),
+
             # display if modes settings wrong or missing
             'mode_error': dedent("""\
                         WARNING: configuration fault detected
                         check modes in rwal.conf
                         fallback mode applied""")
         }
+
+        self.modes = dict(
+        cinnamon=self._state['common_modes'],
+        gnome=self._state['common_modes'],
+        mate=self._state['common_modes'],
+        xfce=('0', '1', '2', '3', '4', '5'),
+        lxde=('tiled', 'center', 'scaled', 'fit', 'stretch'),
+        openbox=('--bg-max', '--bg-scale', '--bg-tile', '--bg-fill',
+                    '--bg-center')
+        )
 
         # fallback wallpaper modes
         if 'openbox' in self.desktopSession:
@@ -685,39 +699,41 @@ class Rwal:
 
     def get_mode(self, environment):
         """check and apply user-defined mode format; use fallback if corrupt"""
-        if environment == 'cinnamon':
-            image_config = self.config.get(
-                'Wallpaper Modes', 'Cinnamon', fallback='scaled')
-            mode = ('none', 'centered', 'scaled', 'spanned', 'stretched',
-                    'wallpaper', 'zoom')
-        elif environment == 'gnome':
-            image_config = self.config.get(
-                'Wallpaper Modes', 'GNOME', fallback='scaled')
-            mode = ('none', 'centered', 'scaled', 'spanned', 'stretched',
-                    'wallpaper', 'zoom')
-        elif environment == 'mate':
-            image_config = self.config.get(
-                'Wallpaper Modes', 'MATE', fallback='scaled')
-            mode = ('none', 'centered', 'scaled', 'spanned', 'stretched',
-                    'wallpaper', 'zoom')
-        elif environment == 'xfce':
-            image_config = self.config.get(
-                'Wallpaper Modes', 'Xfce', fallback='4')
-            mode = ('0', '1', '2', '3', '4', '5')
-        elif environment == 'lxde':
-            image_config = self.config.get(
-                'Wallpaper Modes', 'LXDE', fallback='scaled')
-            mode = ('tiled', 'center', 'scaled', 'fit', 'stretch')
-        else:
-            image_config = self.config.get(
-                'Wallpaper Modes', 'Openbox', fallback='--bg-max')
-            mode = ('--bg-max', '--bg-scale', '--bg-tile', '--bg-fill',
-                    '--bg-center')
-        if image_config in mode:
-            self._state['mode'] = image_config
-            return self._state['mode']
-        else:
-            print(self._state['mode_error'])
+        if not self._state['mode']: # check if mode set by argument
+            if environment == 'cinnamon':
+                image_config = self.config.get(
+                    'Wallpaper Modes', 'Cinnamon', fallback='scaled')
+                mode = ('none', 'centered', 'scaled', 'spanned', 'stretched',
+                        'wallpaper', 'zoom')
+            elif environment == 'gnome':
+                image_config = self.config.get(
+                    'Wallpaper Modes', 'GNOME', fallback='scaled')
+                mode = ('none', 'centered', 'scaled', 'spanned', 'stretched',
+                        'wallpaper', 'zoom')
+            elif environment == 'mate':
+                image_config = self.config.get(
+                    'Wallpaper Modes', 'MATE', fallback='scaled')
+                mode = ('none', 'centered', 'scaled', 'spanned', 'stretched',
+                        'wallpaper', 'zoom')
+            elif environment == 'xfce':
+                image_config = self.config.get(
+                    'Wallpaper Modes', 'Xfce', fallback='4')
+                mode = ('0', '1', '2', '3', '4', '5')
+            elif environment == 'lxde':
+                image_config = self.config.get(
+                    'Wallpaper Modes', 'LXDE', fallback='scaled')
+                mode = ('tiled', 'center', 'scaled', 'fit', 'stretch')
+            else:
+                image_config = self.config.get(
+                    'Wallpaper Modes', 'Openbox', fallback='--bg-max')
+                mode = ('--bg-max', '--bg-scale', '--bg-tile', '--bg-fill',
+                        '--bg-center')
+                
+            if image_config in self.modes[image_config]:
+                self._state['mode'] = image_config
+                return self._state['mode']
+            else:
+                print(self._state['mode_error'])
 
     def set_gnome3(self):
         # set GNOME 3 background for Gnome Shell, Cinnamon, and Unity
@@ -955,6 +971,8 @@ def main(argv):
     parser.add_argument('-e', '--editbackground',
                         help='edit the current background, defaulted to the GIMP',
                         action='store_true')
+    parser.add_argument('-m', '--mode', help='set the mode of the background.')
+
     args = parser.parse_args()
     rwal.set_state('verbose', args.verbose)
 
@@ -1019,6 +1037,9 @@ def main(argv):
     else:
         rwal.change_directory('default')
 
+    if args.mode:
+        rwal.set_state('mode', args.mode)
+        # print(args.mode)
     rwal.set_background()
 
     if args.verbose:
