@@ -699,36 +699,25 @@ class Rwal:
 
     def get_mode(self, environment):
         """check and apply user-defined mode format; use fallback if corrupt"""
-        if not self._state['mode']: # check if mode set by argument
+        if not self._state['mode']: # give precedence to --mode option
             if environment == 'cinnamon':
                 image_config = self.config.get(
                     'Wallpaper Modes', 'Cinnamon', fallback='scaled')
-                mode = ('none', 'centered', 'scaled', 'spanned', 'stretched',
-                        'wallpaper', 'zoom')
             elif environment == 'gnome':
                 image_config = self.config.get(
                     'Wallpaper Modes', 'GNOME', fallback='scaled')
-                mode = ('none', 'centered', 'scaled', 'spanned', 'stretched',
-                        'wallpaper', 'zoom')
             elif environment == 'mate':
                 image_config = self.config.get(
                     'Wallpaper Modes', 'MATE', fallback='scaled')
-                mode = ('none', 'centered', 'scaled', 'spanned', 'stretched',
-                        'wallpaper', 'zoom')
             elif environment == 'xfce':
                 image_config = self.config.get(
                     'Wallpaper Modes', 'Xfce', fallback='4')
-                mode = ('0', '1', '2', '3', '4', '5')
             elif environment == 'lxde':
                 image_config = self.config.get(
                     'Wallpaper Modes', 'LXDE', fallback='scaled')
-                mode = ('tiled', 'center', 'scaled', 'fit', 'stretch')
             else:
                 image_config = self.config.get(
                     'Wallpaper Modes', 'Openbox', fallback='--bg-max')
-                mode = ('--bg-max', '--bg-scale', '--bg-tile', '--bg-fill',
-                        '--bg-center')
-                
             if image_config in self.modes[image_config]:
                 self._state['mode'] = image_config
                 return self._state['mode']
@@ -1039,7 +1028,6 @@ def main(argv):
 
     if args.mode:
         rwal.set_state('mode', args.mode)
-        # print(args.mode)
     rwal.set_background()
 
     if args.verbose:
