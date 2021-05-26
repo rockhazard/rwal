@@ -116,7 +116,7 @@ class Rwal:
         self.desktopEnvironment = None
 
         # valid image types; to expand, use imghdr.what() values
-        self.fileTypes = ('jpeg', 'png', 'bmp')
+        self.fileTypes = ('jpeg', 'png', 'bmp', 'webp')
 
         # configuration files
         if self.desktopSession in self.kdeEnv:
@@ -388,8 +388,12 @@ class Rwal:
 
     def get_source_images(self):
         """create list of images from given directory"""
+        # ext changes with fileTypes check; appended "." fiters extensions
+        ext = ['.{0}'.format(i) for i in self.fileTypes]
+        ext.append('.jpg')
+        extensions = tuple(ext)
         # list files recursively, or only in target directory
-        extensions = ('.jpg', '.jpeg', '.png', '.bmp', '.tiff', '.gif')
+        # extensions = (ext)
         if self._state['list']:
             rawList = self.get_imagesList()
             for line in rawList:
@@ -750,10 +754,32 @@ class Rwal:
     def set_kde(self):
         # set KDE4 & 5
         image = self.select_image()
-        kde = \
-            'rm $(find {1} -type f \
-            -iregex ".*\.\(jpg\|png\|jpeg\)$") 2> /dev/null ;\
-            cp {0} {1}/'.format(image, self.configDirectory)
+
+        kde_session = run('[ "${KDE_FULL_SESSION}" == "true" ]', shell=True, capture_output=True).returncode
+        kde_version = run('[[ -n "${KDE_SESSION_VERSION}" && "${KDE_SESSION_VERSION}" == "5" ]]', shell=True, capture_output=True).returncode
+        qdbus_name = run('command -v qdbus-qt5 &>/dev/null', shell=True, capture_output=True).returncode
+
+        if kde_session == 0:
+            # is the host machine running KDE5?
+            if kde_version == 0:
+                if qdbus_name == 0:
+                    qdbus_command = 'qdbus-qt5'
+                else:
+                    qdbus_command = 'qdbus'
+
+                kde = """QT_SELECT=5 {0} org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "var allDesktops = desktops();
+                for (i=0; i < allDesktops.length; i++) {{
+                    d = allDesktops[i];
+                    d.wallpaperPlugin = 'org.kde.image';
+                    d.currentConfigGroup = Array('Wallpaper', 'org.kde.image', 'General');
+                    d.writeConfig('Image', 'file://""{1}""')
+                }}"
+                """.format(qdbus_command, image)
+        else:
+            kde = \
+                'rm $(find {1} -type f \
+                -iregex ".*\.\(jpg\|png\|jpeg\)$") 2> /dev/null ;\
+                cp {0} {1}/'.format(image, self.configDirectory)
         return kde
 
     def set_xfce(self):
@@ -900,7 +926,7 @@ def main(argv):
         aspect ratios: sd480, hd1050, hd1080, dci4k, hd1050x2, hd1080x2, dci4kx2, \
         and auto. Note that the notation is designed for easy identification by \
         popular sample resolution, but multiple resolutions may be filtered per \
-        aspect ratio (such as 4k UHD and 1080 HD, since both are 16:9 aspect ratio).', 
+        aspect ratio (such as 4k UHD and 1080 HD, since both are 16:9 aspect ratio).',
         nargs=1, metavar=('ASPECT_RATIO'))
     parser.add_argument('-t', '--parent',
                         help='ignore images in subdirectories',
@@ -908,7 +934,7 @@ def main(argv):
     parser.add_argument('-y', '--presets',
                         help='List all preset image directories configured in rwal.conf.',
                         action='store_true')
-    parser.add_argument('--screen_size', help='Report current desktop resolution.', 
+    parser.add_argument('--screen_size', help='Report current desktop resolution.',
                         action='store_true')
     parser.add_argument('-d', '--directory', help='random background from DIRECTORY, e.g. "%(prog)s -d ~/Pictures"',
                         nargs=1)
